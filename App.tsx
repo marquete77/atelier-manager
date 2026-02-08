@@ -6,17 +6,21 @@ import { CalendarView } from './views/Calendar/CalendarView';
 import { NewProjectView } from './views/Projects/NewProjectView';
 import { ViewState } from './types';
 import { Nav } from "@/components/layout/Nav/Nav.tsx";
+import { ClientProfileView } from "./src/views/Clients/ClientProfile/ClientProfileView";
 import styles from './App.module.css';
 
 function App() {
   const [currentView, setCurrentView] = useState<ViewState>('dashboard');
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const renderView = () => {
     switch (currentView) {
       case 'dashboard':
-        return <DashboardView />;
+        return <DashboardView onChangeView={setCurrentView} />;
       case 'clients':
-        return <ClientsView />;
+        return <ClientsView onChangeView={setCurrentView} />;
+      case 'client-profile':
+        return <ClientProfileView onChangeView={setCurrentView} />;
       case 'calendar':
         return <CalendarView />;
       case 'new-project':
@@ -30,9 +34,14 @@ function App() {
 
   return (
     <div className={styles.appContainer}>
-      <Nav currentView={currentView} onChangeView={setCurrentView} />
+      <Nav
+        currentView={currentView}
+        onChangeView={setCurrentView}
+        isCollapsed={isSidebarCollapsed}
+        onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+      />
 
-      <main className={styles.mainContent}>
+      <main className={`${styles.mainContent} ${isSidebarCollapsed ? styles.mainContentCollapsed : ''}`}>
         <div className={styles.contentWrapper}>
           {renderView()}
         </div>

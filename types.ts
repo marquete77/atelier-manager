@@ -31,4 +31,4 @@ export interface Appointment {
   type: 'Toma de medidas' | 'Primera prueba' | 'Segunda prueba' | 'Entrega final' | 'Consulta';
 }
 
-export type ViewState = 'dashboard' | 'clients' | 'measurements' | 'calendar' | 'projects' | 'new-project';
+export type ViewState = 'dashboard' | 'clients' | 'measurements' | 'calendar' | 'projects' | 'new-project' | 'client-profile';

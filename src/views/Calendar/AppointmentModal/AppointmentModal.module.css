@@ -1,0 +1,180 @@
+.backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(44, 62, 80, 0.4);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal {
+    background-color: white;
+    border-radius: 1.5rem;
+    /* rounded-3xl */
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    width: 22rem;
+    /* w-88 */
+    position: relative;
+    overflow: hidden;
+    animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.header {
+    background-color: #B25B52;
+    /* terracotta (approx based on image) */
+    background: linear-gradient(135deg, #B25B52 0%, #C47067 100%);
+    padding: 1.5rem;
+    color: white;
+    position: relative;
+}
+
+.closeButton {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    color: rgba(255, 255, 255, 0.8);
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.closeButton:hover {
+    color: white;
+}
+
+.clientName {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem 0;
+}
+
+.appointmentType {
+    font-size: 0.875rem;
+    opacity: 0.9;
+    font-weight: 400;
+}
+
+.content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.infoRow {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.iconWrapper {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background-color: #F8FAFC;
+    /* slate-50 */
+    color: #64748B;
+    /* slate-500 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.infoDetails {
+    display: flex;
+    flex-direction: column;
+}
+
+.infoLabel {
+    font-weight: 700;
+    color: var(--color-charcoal);
+    font-size: 0.875rem;
+    margin-bottom: 0.125rem;
+}
+
+.infoSubtext {
+    font-size: 0.75rem;
+    color: #64748B;
+    /* slate-500 */
+}
+
+.statusDot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #FBBF24;
+    /* amber */
+    margin-right: 0.375rem;
+}
+
+.actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.viewButton {
+    flex: 1;
+    background-color: #B25B52;
+    /* terracotta */
+    color: white;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.viewButton:hover {
+    background-color: #9A4D45;
+}
+
+.rescheduleButton {
+    flex: 1;
+    background-color: #F1F5F9;
+    /* slate-100 */
+    color: #475569;
+    /* slate-600 */
+    border: none;
+    padding: 0.75rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.rescheduleButton:hover {
+    background-color: #E2E8F0;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes scaleUp {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}

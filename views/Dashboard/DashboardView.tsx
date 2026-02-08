@@ -1,9 +1,14 @@
 import React from 'react';
 import { Calendar, Package, DollarSign, ChevronRight } from 'lucide-react';
-import {MOCK_APPOINTMENTS, MOCK_PROJECTS} from "@/constants.ts";
+import { MOCK_APPOINTMENTS, MOCK_PROJECTS } from "@/constants.ts";
+import { ViewState } from "@/types.ts";
 import styles from './DashboardView.module.css';
 
-export const DashboardView: React.FC = () => {
+interface DashboardViewProps {
+  onChangeView?: (view: ViewState) => void;
+}
+
+export const DashboardView: React.FC<DashboardViewProps> = ({ onChangeView }) => {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
@@ -44,7 +49,10 @@ export const DashboardView: React.FC = () => {
         <div className={styles.column}>
           <div className={styles.sectionHeader}>
             <h3 className={styles.sectionTitle}>Citas de hoy</h3>
-            <button className={styles.viewAllLink}>
+            <button
+              className={styles.viewAllLink}
+              onClick={() => onChangeView?.('clients')}
+            >
               Ver todas <ChevronRight size={14} />
             </button>
           </div>
@@ -70,7 +78,10 @@ export const DashboardView: React.FC = () => {
         <div className={styles.column}>
           <div className={styles.sectionHeader}>
             <h3 className={styles.sectionTitle}>Próximas Entregas</h3>
-            <button className={`${styles.viewAllLink} ${styles.grayLink}`}>
+            <button
+              className={`${styles.viewAllLink} ${styles.grayLink}`}
+              onClick={() => onChangeView?.('calendar')}
+            >
               Ver calendario <ChevronRight size={14} />
             </button>
           </div>

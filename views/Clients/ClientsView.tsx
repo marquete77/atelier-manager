@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import { Search, Plus, Phone, Mail, ChevronRight, MoreVertical } from 'lucide-react';
-import {MOCK_CLIENTS} from "@/constants.ts";
-import {CreateClientModal} from "@/components/forms/CreateClientModal/CreateClientModal.tsx";
+import { MOCK_CLIENTS } from "@/constants.ts";
+import { CreateClientModal } from "@/components/forms/CreateClientModal/CreateClientModal.tsx";
+import { ViewState } from "@/types.ts";
 import styles from './ClientsView.module.css';
 
-export const ClientsView: React.FC = () => {
+interface ClientsViewProps {
+  onChangeView?: (view: ViewState) => void;
+}
+
+export const ClientsView: React.FC<ClientsViewProps> = ({ onChangeView }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
@@ -66,9 +71,12 @@ export const ClientsView: React.FC = () => {
               </div>
 
               <div className={styles.cardFooter}>
-                <span className={styles.viewProfileLink}>
+                <button
+                  className={styles.viewProfileLink}
+                  onClick={() => onChangeView?.('client-profile')}
+                >
                   Ver Perfil <ChevronRight size={16} />
-                </span>
+                </button>
               </div>
             </div>
           </div>
