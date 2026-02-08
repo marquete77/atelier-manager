@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html class="light" lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Atelier Manager - Nuevo Proyecto</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#b25c53", // Terracotta
+                        "primary-dark": "#9a4d45",
+                        "background-light": "#f7f6f6",
+                        "background-dark": "#1d1615",
+                        "linen": "#fdfbf7",
+                        "card-light": "#ffffff",
+                        "card-dark": "#2a2221",
+                        "charcoal": "#36454F",
+                        "input-border-light": "#e3dede",
+                        "input-border-dark": "#3e3433",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "serif": ["Playfair Display", "serif"],
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "custom": "12px",
+                        "full": "9999px"
+                    },
+                    backgroundImage: {
+                        'linen-pattern': "url('data:image/svg+xml,%3Csvg width=\\'6\\' height=\\'6\\' viewBox=\\'0 0 6 6\\' xmlns=\\'http://www.w3.org/2000/svg\\'%3E%3Cg fill=\\'%239C92AC\\' fill-opacity=\\'0.05\\' fill-rule=\\'evenodd\\'%3E%3Cpath d=\\'M5 0h1L0 6V5zM6 5v1H5z\\'/%3E%3C/g%3E%3C/svg%3E')",
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: "Inter", sans-serif
+        }
+
+        .font-serif {
+            font-family: "Playfair Display", serif
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #d1d5db;
+            border-radius: 20px
+        }
+
+        .file-drop-area {
+            background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuB1djKbbt3ObsmvJvv_A3IcqSIAQjLrl4QPeD_Z033sHVCZrQ_ILAHXUiWS9F-YgjcFoXhwD7eol9mNVpvw2Z54VMaiGgaUfzQKcRAw4c8Qw3dyOBRKfboQsJro4ajQFyqSIbHdGN8i_8msf0Kjam_yG4kW7Qokd-dlQupxA1hD9PpxObIqDoFqUkgzhcUhRLOXlK-tinTvHBy5yDRMcSLgrR3EM4tvSnEyAHfxJMwKoyVnPV_smy2n5NV_rX7Lp3tiUfyZ7HFX-so)
+        }
+    </style>
+</head>
+
+<body
+    class="bg-linen dark:bg-background-dark bg-linen-pattern text-charcoal dark:text-slate-100 min-h-screen flex flex-col">
+    <header
+        class="sticky top-0 z-30 flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-card-dark/90 backdrop-blur-md px-6 py-3 lg:px-10">
+        <div class="flex items-center gap-4 text-slate-900 dark:text-white">
+            <div class="size-8 text-primary flex items-center justify-center bg-primary/10 rounded-lg">
+                <span class="material-symbols-outlined text-2xl">content_cut</span>
+            </div>
+            <h2 class="text-slate-900 dark:text-white text-xl font-bold font-serif leading-tight tracking-tight">Atelier
+                Manager</h2>
+        </div>
+        <div class="hidden md:flex flex-1 justify-end gap-8 items-center">
+            <nav class="flex items-center gap-6 lg:gap-9">
+                <a class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
+                    href="#">Clientes</a>
+                <a class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
+                    href="#">Citas</a>
+                <a class="text-primary font-bold text-sm leading-normal border-b-2 border-primary pb-0.5"
+                    href="#">Proyectos</a>
+                <a class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
+                    href="#">Inventario</a>
+            </nav>
+            <div class="flex gap-3 border-l border-slate-200 dark:border-slate-700 pl-6">
+                <button
+                    class="flex items-center justify-center rounded-custom size-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">notifications</span>
+                </button>
+                <button
+                    class="flex items-center justify-center rounded-custom size-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">account_circle</span>
+                </button>
+            </div>
+        </div>
+    </header>
+    <main class="flex-1 w-full max-w-[1000px] mx-auto px-4 py-8 lg:px-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
+            <div class="flex flex-col gap-2">
+                <div
+                    class="flex items-center gap-2 text-primary dark:text-primary/80 text-sm font-medium uppercase tracking-wider">
+                    <span class="material-symbols-outlined text-lg">add_circle</span>
+                    <span>Inicio de Proyecto</span>
+                </div>
+                <h1
+                    class="text-slate-900 dark:text-white text-4xl lg:text-5xl font-serif font-medium leading-tight tracking-tight">
+                    Nuevo Proyecto
+                </h1>
+                <p class="text-slate-500 dark:text-slate-400 text-base font-normal leading-normal mt-1">
+                    Selecciona el tipo de trabajo y completa los detalles iniciales.
+                </p>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+            <button
+                class="relative group flex flex-col items-start p-6 rounded-xl border-2 border-primary bg-white dark:bg-card-dark shadow-md transition-all">
+                <div class="absolute top-4 right-4 text-primary">
+                    <span class="material-symbols-outlined text-2xl">check_circle</span>
+                </div>
+                <div class="size-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4">
+                    <span class="material-symbols-outlined text-2xl">straighten</span>
+                </div>
+                <h3 class="text-xl font-serif font-semibold text-slate-900 dark:text-white mb-2">Confección a Medida
+                </h3>
+                <p class="text-left text-sm text-slate-500 dark:text-slate-400">Creación de prendas desde cero. Incluye
+                    toma de medidas completa y pruebas.</p>
+            </button>
+            <button
+                class="relative group flex flex-col items-start p-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-card-dark/50 hover:bg-white dark:hover:bg-card-dark hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-sm transition-all opacity-70 hover:opacity-100">
+                <div
+                    class="size-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 mb-4 group-hover:text-primary group-hover:bg-primary/10 transition-colors">
+                    <span class="material-symbols-outlined text-2xl">architecture</span>
+                </div>
+                <h3 class="text-xl font-serif font-semibold text-slate-700 dark:text-slate-300 mb-2">Arreglo /
+                    Compostura</h3>
+                <p class="text-left text-sm text-slate-500 dark:text-slate-400">Modificaciones a prendas existentes.
+                    Ajustes de talla, ruedos y reparaciones.</p>
+            </button>
+        </div>
+        <div
+            class="bg-white dark:bg-card-dark rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 md:p-10 mb-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div class="lg:col-span-8 flex flex-col gap-8">
+                    <div>
+                        <h3
+                            class="text-lg font-serif font-medium text-slate-900 dark:text-white mb-6 border-b border-slate-100 dark:border-slate-800 pb-2">
+                            Detalles del Proyecto</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="md:col-span-2">
+                                <label
+                                    class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Cliente</label>
+                                <div class="relative">
+                                    <select
+                                        class="form-select w-full rounded-custom border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white h-12 px-4 focus:border-primary focus:ring-primary/20 dark:focus:ring-primary/20 transition-all font-medium">
+                                        <option>Seleccionar cliente existente...</option>
+                                        <option selected="">Maria Gonzalez</option>
+                                        <option>Ana Martinez</option>
+                                        <option>Sofia Rodriguez</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-10 flex items-center">
+                                        <button class="text-primary text-sm font-bold hover:underline">Nuevo</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Título
+                                    del Proyecto</label>
+                                <input
+                                    class="form-input w-full rounded-custom border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white h-12 px-4 focus:border-primary focus:ring-primary/20 dark:focus:ring-primary/20 transition-all placeholder:text-slate-400 font-medium"
+                                    placeholder="Ej: Vestido de Gala Rojo" type="text"
+                                    value="Vestido de Novia Satinado" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Fecha
+                                    de Inicio</label>
+                                <input
+                                    class="form-input w-full rounded-custom border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white h-12 px-4 focus:border-primary focus:ring-primary/20 dark:focus:ring-primary/20 transition-all font-medium"
+                                    type="date" value="2023-10-25" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Fecha
+                                    de Entrega</label>
+                                <input
+                                    class="form-input w-full rounded-custom border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white h-12 px-4 focus:border-primary focus:ring-primary/20 dark:focus:ring-primary/20 transition-all font-medium"
+                                    type="date" />
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3
+                            class="text-lg font-serif font-medium text-slate-900 dark:text-white mb-4 border-b border-slate-100 dark:border-slate-800 pb-2">
+                            Carga de Imágenes</h3>
+                        <div
+                            class="file-drop-area relative flex flex-col items-center justify-center w-full h-48 rounded-custom bg-linen/50 dark:bg-slate-800/20 hover:bg-linen dark:hover:bg-slate-800/40 transition-colors cursor-pointer group">
+                            <input class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" type="file" />
+                            <div
+                                class="flex flex-col items-center gap-3 text-slate-500 dark:text-slate-400 group-hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined text-4xl">cloud_upload</span>
+                                <div class="text-center">
+                                    <p class="text-sm font-medium text-slate-700 dark:text-slate-300">Arrastra tus
+                                        imágenes aquí</p>
+                                    <p class="text-xs mt-1">o haz clic para explorar archivos (JPG, PNG)</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex gap-3 overflow-x-auto pb-2">
+                            <div
+                                class="relative flex-none w-20 h-20 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 group">
+                                <img alt="Reference 1" class="w-full h-full object-cover"
+                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7PLglkKvWFwghGlxsBa6XHK-yHIII_bymSgkKTlYH3h4eiZJCokGNv6hs9m-avT844cRyb-uJwWoOCYvBVow1zONoQ4t0jxF6OAhywHX7ij-2nrmn-wCqR6ZPPnrrM3HGJdQr3FH3AlLOSo03-zChn8XJkWL99Zo-gbDyq8W_yJrGbhvTj0skQlXRaWTJPIPTsWszZkSGO-P8OvAfWWRznD_VsC22tBYY_7pbWy3uoLdcPn_40vkox_0zrcSkxPEKFEFuPupmzeQ" />
+                                <button
+                                    class="absolute top-1 right-1 bg-black/50 hover:bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-all">
+                                    <span class="material-symbols-outlined text-[14px]">close</span>
+                                </button>
+                            </div>
+                            <div
+                                class="relative flex-none w-20 h-20 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 group">
+                                <img alt="Reference 2" class="w-full h-full object-cover"
+                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGHNm-ohQdKtgTL8FYWVJIoEBexAeZmyQTh1w-xBPoMtdEHnotS5ZDz9SRklhjCspGrlBP-4LzwRWF32sXOUxzRuUPBKUj2GigG00iVPVFB3rLqf-YPWMRkdSN44yRYuKfQ-ErTz5i-5oEASNiS16Z2O0Shy-LjdZ_MJXaeku4c-AleaU2mR-Ddt1_HVOzp3razWMJZ6tokze3ObIvPaD7YGboNzSpAh5HLB9dJaBT3nEVtnBd-Yib9Z90qSCyJ0hbFVhN5fyOprw" />
+                                <button
+                                    class="absolute top-1 right-1 bg-black/50 hover:bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-all">
+                                    <span class="material-symbols-outlined text-[14px]">close</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-4 flex flex-col gap-6">
+                    <div
+                        class="bg-linen dark:bg-slate-800/40 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
+                        <h3
+                            class="text-lg font-serif font-medium text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">payments</span>
+                            Presupuesto Estimado
+                        </h3>
+                        <div class="space-y-4">
+                            <label class="block group">
+                                <span
+                                    class="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-bold mb-1 block">Costo
+                                    Total</span>
+                                <div class="relative">
+                                    <span
+                                        class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-medium">$</span>
+                                    <input
+                                        class="form-input w-full rounded-custom border-slate-200 dark:border-slate-600 bg-white dark:bg-card-dark text-slate-900 dark:text-white h-10 pl-7 pr-3 focus:border-primary focus:ring-primary/20 dark:focus:ring-primary/20 transition-all font-bold text-lg"
+                                        placeholder="0.00" type="number" />
+                                </div>
+                            </label>
+                            <label class="block group">
+                                <span
+                                    class="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-bold mb-1 block">Anticipo</span>
+                                <div class="relative">
+                                    <span
+                                        class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-medium">$</span>
+                                    <input
+                                        class="form-input w-full rounded-custom border-slate-200 dark:border-slate-600 bg-white dark:bg-card-dark text-slate-900 dark:text-white h-10 pl-7 pr-3 focus:border-primary focus:ring-primary/20 dark:focus:ring-primary/20 transition-all font-medium"
+                                        placeholder="0.00" type="number" />
+                                </div>
+                            </label>
+                            <div
+                                class="pt-4 mt-2 border-t border-slate-200 dark:border-slate-600 flex justify-between items-end">
+                                <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Saldo
+                                    Pendiente</span>
+                                <span class="text-xl font-bold text-primary">$ 0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Notas
+                            Rápidas</label>
+                        <textarea
+                            class="form-textarea w-full rounded-custom border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white p-3 h-32 resize-none focus:border-primary focus:ring-primary/20 dark:focus:ring-primary/20 transition-all text-sm"
+                            placeholder="Detalles importantes a recordar..."></textarea>
+                    </div>
+                    <div class="pt-4">
+                        <button
+                            class="w-full flex items-center justify-center gap-2 rounded-custom h-14 bg-primary hover:bg-primary-dark text-white shadow-lg shadow-primary/20 transition-all text-base font-bold mb-3">
+                            <span class="material-symbols-outlined text-[22px]">straighten</span>
+                            Ir a Toma de Medidas
+                        </button>
+                        <button
+                            class="w-full flex items-center justify-center gap-2 rounded-custom h-12 border border-slate-200 dark:border-slate-700 bg-white dark:bg-card-dark text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-sm font-bold">
+                            Guardar como Borrador
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+
+</html>

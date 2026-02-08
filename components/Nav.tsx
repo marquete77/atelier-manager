@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Users, Ruler, Calendar, Scissors, Settings, LogOut, PenTool } from 'lucide-react';
+import { LayoutDashboard, Users, Ruler, Calendar, Scissors, Settings, LogOut, PenTool, FileText } from 'lucide-react';
 import { ViewState } from '../types';
 
 interface NavProps {
@@ -12,7 +12,7 @@ export const Nav: React.FC<NavProps> = ({ currentView, onChangeView }) => {
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'clients', label: 'Clientes', icon: Users },
     { id: 'measurements', label: 'Medidas', icon: Ruler },
-    { id: 'alterations', label: 'Arreglos', icon: Scissors },
+    { id: 'projects', label: 'Proyectos', icon: FileText },
     { id: 'calendar', label: 'Agenda', icon: Calendar },
   ];
 
@@ -32,11 +32,10 @@ export const Nav: React.FC<NavProps> = ({ currentView, onChangeView }) => {
             <button
               key={item.id}
               onClick={() => onChangeView(item.id as ViewState)}
-              className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-300 text-sm font-medium ${
-                currentView === item.id
-                  ? 'bg-terracotta text-white shadow-md shadow-terracotta/20'
-                  : 'text-charcoal-light hover:bg-linen hover:text-charcoal'
-              }`}
+              className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-300 text-sm font-medium ${currentView === item.id
+                ? 'bg-terracotta text-white shadow-md shadow-terracotta/20'
+                : 'text-charcoal-light hover:bg-linen hover:text-charcoal'
+                }`}
             >
               <item.icon size={20} className={currentView === item.id ? 'stroke-[2.5px]' : 'stroke-2'} />
               {item.label}
@@ -66,9 +65,8 @@ export const Nav: React.FC<NavProps> = ({ currentView, onChangeView }) => {
           <button
             key={item.id}
             onClick={() => onChangeView(item.id as ViewState)}
-            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-colors ${
-              currentView === item.id ? 'text-terracotta' : 'text-charcoal-light'
-            }`}
+            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-colors ${currentView === item.id ? 'text-terracotta' : 'text-charcoal-light'
+              }`}
           >
             <item.icon size={24} className={currentView === item.id ? 'fill-terracotta/10 stroke-2' : 'stroke-1.5'} />
             <span className="text-[10px] font-medium">{item.label}</span>

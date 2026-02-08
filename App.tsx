@@ -5,6 +5,7 @@ import { DashboardView } from './views/DashboardView';
 import { ClientsView } from './views/ClientsView';
 import { CalendarView } from './views/CalendarView';
 import { AlterationsView } from './views/AlterationsView';
+import { NewProjectView } from './views/NewProjectView';
 import { ViewState } from './types';
 
 function App() {
@@ -18,8 +19,9 @@ function App() {
         return <ClientsView />;
       case 'calendar':
         return <CalendarView />;
-      case 'alterations':
-        return <AlterationsView />;
+      case 'new-project':
+      case 'projects':
+        return <NewProjectView />;
       case 'measurements':
       default:
         return <MeasurementsView />;
