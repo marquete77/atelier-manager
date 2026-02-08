@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Save, User, FileText, Camera, Check, Scissors } from 'lucide-react';
-import { InputMeasure } from '../components/InputMeasure';
-import { Client } from '../types';
+import {InputMeasure} from "@/components/common/InputMeasure/InputMeasure.tsx";
+import {Client} from "@/types.ts";
 import styles from './MeasurementsView.module.css';
 
 export const MeasurementsView: React.FC = () => {

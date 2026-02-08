@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Search, Plus, Phone, Mail, ChevronRight, MoreVertical } from 'lucide-react';
-import { MOCK_CLIENTS } from '../constants';
-import { CreateClientModal } from '../components/CreateClientModal';
+import {MOCK_CLIENTS} from "@/constants.ts";
+import {CreateClientModal} from "@/components/forms/CreateClientModal/CreateClientModal.tsx";
 import styles from './ClientsView.module.css';
 
 export const ClientsView: React.FC = () => {

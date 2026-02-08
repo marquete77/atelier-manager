@@ -1,6 +1,6 @@
 import React from 'react';
 import { Calendar, Package, DollarSign, ChevronRight } from 'lucide-react';
-import { MOCK_APPOINTMENTS, MOCK_PROJECTS } from '../constants';
+import {MOCK_APPOINTMENTS, MOCK_PROJECTS} from "@/constants.ts";
 import styles from './DashboardView.module.css';
 
 export const DashboardView: React.FC = () => {

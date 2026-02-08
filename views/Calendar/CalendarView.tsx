@@ -1,6 +1,6 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { MOCK_APPOINTMENTS } from '../constants';
+import {MOCK_APPOINTMENTS} from "@/constants.ts";
 import styles from './CalendarView.module.css';
 
 export const CalendarView: React.FC = () => {
