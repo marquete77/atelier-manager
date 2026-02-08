@@ -1,0 +1,228 @@
+.calendarContainer {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    animation: fadeIn 0.4s ease-out forwards;
+    padding-bottom: 5rem;
+}
+
+@media (min-width: 768px) {
+    .calendarContainer {
+        padding-bottom: 0;
+    }
+}
+
+.header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.title {
+    font-family: var(--font-serif);
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--color-charcoal);
+    margin: 0;
+}
+
+.subtitle {
+    color: var(--color-charcoal-light);
+    margin-top: 0.25rem;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.navButton {
+    width: 2.25rem;
+    height: 2.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid #E2E8F0;
+    background-color: transparent;
+    color: var(--color-charcoal);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.navButton:hover {
+    background-color: white;
+}
+
+.weekLabel {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--color-charcoal);
+    padding: 0 0.5rem;
+}
+
+.calendarGrid {
+    flex: 1;
+    background-color: var(--color-surface);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-soft);
+    border: 1px solid #F8FAFC;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.headerGrid {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    border-bottom: 1px solid #F1F5F9;
+}
+
+.timeHeaderCell {
+    padding: 1rem;
+    border-right: 1px solid #F8FAFC;
+}
+
+.dayHeaderCell {
+    padding: 1rem;
+    text-align: center;
+    border-right: 1px solid #F8FAFC;
+}
+
+.dayHeaderCell:last-child {
+    border-right: none;
+}
+
+.activeDayHeader {
+    background-color: rgba(178, 91, 82, 0.05);
+}
+
+.dayName {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--color-charcoal-light);
+    margin-bottom: 0.25rem;
+}
+
+.dayNumber {
+    display: inline-flex;
+    width: 2rem;
+    height: 2rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: var(--color-charcoal);
+}
+
+.activeDayNumber {
+    background-color: var(--color-terracotta);
+    color: white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.timeGrid {
+    flex: 1;
+    overflow-y: auto;
+    position: relative;
+    /* Custom scrollbar styles would go here if needed */
+}
+
+.timeRow {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    min-height: 80px;
+    border-bottom: 1px solid #F8FAFC;
+    border-style: dashed;
+}
+
+.timeLabelCell {
+    padding: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-charcoal-light);
+    text-align: right;
+    padding-right: 1rem;
+    margin-top: -0.625rem;
+}
+
+.dayCell {
+    border-right: 1px solid #F8FAFC;
+    position: relative;
+}
+
+.dayCell:last-child {
+    border-right: 0;
+}
+
+.activeDayCell {
+    background-color: rgba(178, 91, 82, 0.05);
+}
+
+.appointmentCard {
+    position: absolute;
+    left: 0.25rem;
+    right: 0.25rem;
+    top: 0.25rem;
+    bottom: 0.25rem;
+    background-color: var(--color-terracotta);
+    color: white;
+    padding: 0.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    font-size: 0.75rem;
+    overflow: hidden;
+    border-left: 4px solid rgba(255, 255, 255, 0.3);
+    transition: transform 0.2s;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.appointmentCard:hover {
+    transform: scale(1.02);
+}
+
+.appointmentClient {
+    font-weight: 700;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.appointmentType {
+    display: block;
+    opacity: 0.9;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.currentTimeLine {
+    position: absolute;
+    top: 340px;
+    /* This would need to be dynamic in a real app */
+    left: 12.5%;
+    /* 100% / 8 columns */
+    right: 0;
+    border-top: 2px solid var(--color-terracotta);
+    z-index: 20;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+}
+
+.currentTimeDot {
+    width: 0.5rem;
+    height: 0.5rem;
+    background-color: var(--color-terracotta);
+    border-radius: 50%;
+    margin-left: -0.25rem;
+}

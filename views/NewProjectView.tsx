@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { PlusCircle, Ruler, FileText, X } from 'lucide-react';
 import styles from './NewProjectView.module.css';
 import { ProjectForm } from '../components/ProjectForm';
-import { AlterationsView } from './AlterationsView';
+import { AlterationsForm } from '../components/AlterationsForm';
 
 export const NewProjectView: React.FC = () => {
     const [projectType, setProjectType] = useState<'confection' | 'alteration'>('confection');
@@ -60,7 +60,7 @@ export const NewProjectView: React.FC = () => {
             {projectType === 'confection' ? (
                 <ProjectForm projectType={projectType} />
             ) : (
-                <AlterationsView />
+                <AlterationsForm />
             )}
         </div>
     );

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Save, User, FileText, Camera, ChevronLeft, Check, AlertCircle, Scissors } from 'lucide-react';
+import { Save, User, FileText, Camera, Check, Scissors } from 'lucide-react';
 import { InputMeasure } from '../components/InputMeasure';
 import { Client } from '../types';
+import styles from './MeasurementsView.module.css';
 
 export const MeasurementsView: React.FC = () => {
   const [activeClient] = useState<Partial<Client>>({ name: "Maria Gonzalez", id: "1" });
-  
+
   // State for form fields
   const [measures, setMeasures] = useState({
     busto: '',
@@ -28,68 +29,68 @@ export const MeasurementsView: React.FC = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto animate-fade-in pb-24 md:pb-8">
+    <div className={styles.container}>
       {/* Header Section */}
-      <header className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <div className="flex items-center gap-2 text-terracotta text-sm font-bold uppercase tracking-wider mb-2">
-            <RulerIcon /> 
+      <header className={styles.header}>
+        <div className={styles.headerLeft}>
+          <div className={styles.breadcrumb}>
+            <RulerIcon />
             <span>Nueva Ficha</span>
           </div>
-          <h1 className="font-serif text-4xl md:text-5xl text-charcoal mb-2">Ficha de Medidas</h1>
-          <div className="flex items-center gap-2 text-charcoal-light">
-            <div className="w-2 h-2 rounded-full bg-green-500"></div>
-            <span>Cliente: <strong className="text-charcoal">{activeClient.name}</strong></span>
-            <span className="text-gray-300">|</span>
+          <h1 className={styles.title}>Ficha de Medidas</h1>
+          <div className={styles.metaInfo}>
+            <div className={styles.statusDot}></div>
+            <span>Cliente: <strong className={styles.clientName}>{activeClient.name}</strong></span>
+            <span className={styles.separator}>|</span>
             <span>Proyecto: Vestido de Gala</span>
           </div>
         </div>
 
-        <div className="flex gap-3 w-full md:w-auto">
-          <button className="flex-1 md:flex-none px-6 py-3 rounded-xl border border-gray-200 text-charcoal font-bold hover:bg-white transition-colors">
+        <div className={styles.headerActions}>
+          <button className={styles.cancelButton}>
             Cancelar
           </button>
-          <button className="flex-1 md:flex-none px-8 py-3 rounded-xl bg-terracotta text-white font-bold shadow-lg shadow-terracotta/25 hover:bg-terracotta-dark transition-all flex items-center justify-center gap-2">
+          <button className={styles.saveButton}>
             <Save size={18} />
             Guardar Medidas
           </button>
         </div>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className={styles.mainGrid}>
         {/* Left Column: Form Blocks */}
-        <div className="lg:col-span-8 space-y-6">
-          
+        <div className={styles.leftColumn}>
+
           {/* Upper Body Section */}
-          <section className="bg-surface rounded-xl p-6 md:p-8 shadow-card border border-gray-50">
-            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
-              <div className="w-10 h-10 rounded-full bg-terracotta/10 flex items-center justify-center text-terracotta">
+          <section className={styles.sectionCard}>
+            <div className={styles.sectionHeader}>
+              <div className={styles.sectionIconWrapper}>
                 <User size={20} />
               </div>
-              <h3 className="font-serif text-2xl text-charcoal">Parte Superior</h3>
+              <h3 className={styles.sectionTitle}>Parte Superior</h3>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <div className={styles.inputsGrid}>
               <InputMeasure label="Contorno de Busto" value={measures.busto} onChange={(v) => handleChange('busto', v)} />
               <InputMeasure label="Ancho de Espalda" value={measures.espalda} onChange={(v) => handleChange('espalda', v)} />
               <InputMeasure label="Talle Delantero" value={measures.talleDelantero} onChange={(v) => handleChange('talleDelantero', v)} />
               <InputMeasure label="Talle Espalda" value={measures.talleEspalda} onChange={(v) => handleChange('talleEspalda', v)} />
-              <div className="md:col-span-2">
-                 <InputMeasure label="Altura de Busto" value={measures.alturaBusto} onChange={(v) => handleChange('alturaBusto', v)} />
+              <div className={styles.fullWidth}>
+                <InputMeasure label="Altura de Busto" value={measures.alturaBusto} onChange={(v) => handleChange('alturaBusto', v)} />
               </div>
             </div>
           </section>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className={styles.subGrid}>
             {/* Lower Body Section */}
-            <section className="bg-surface rounded-xl p-6 md:p-8 shadow-card border border-gray-50 h-full">
-              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
-                <div className="w-10 h-10 rounded-full bg-terracotta/10 flex items-center justify-center text-terracotta">
+            <section className={`${styles.sectionCard} ${styles.heightFull}`}>
+              <div className={styles.sectionHeader}>
+                <div className={styles.sectionIconWrapper}>
                   <User size={20} className="transform rotate-180" />
                 </div>
-                <h3 className="font-serif text-2xl text-charcoal">Parte Inferior</h3>
+                <h3 className={styles.sectionTitle}>Parte Inferior</h3>
               </div>
-              <div className="space-y-5">
+              <div className={styles.inputSpace}>
                 <InputMeasure label="Contorno de Cintura" value={measures.cintura} onChange={(v) => handleChange('cintura', v)} />
                 <InputMeasure label="Contorno de Cadera" value={measures.cadera} onChange={(v) => handleChange('cadera', v)} />
                 <InputMeasure label="Largo de Tiro" value={measures.largoTiro} onChange={(v) => handleChange('largoTiro', v)} />
@@ -98,14 +99,14 @@ export const MeasurementsView: React.FC = () => {
             </section>
 
             {/* Sleeves Section */}
-            <section className="bg-surface rounded-xl p-6 md:p-8 shadow-card border border-gray-50 h-full">
-              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
-                <div className="w-10 h-10 rounded-full bg-terracotta/10 flex items-center justify-center text-terracotta">
+            <section className={`${styles.sectionCard} ${styles.heightFull}`}>
+              <div className={styles.sectionHeader}>
+                <div className={styles.sectionIconWrapper}>
                   <Scissors size={20} />
                 </div>
-                <h3 className="font-serif text-2xl text-charcoal">Mangas</h3>
+                <h3 className={styles.sectionTitle}>Mangas</h3>
               </div>
-              <div className="space-y-5">
+              <div className={styles.inputSpace}>
                 <InputMeasure label="Largo de Manga" value={measures.largoManga} onChange={(v) => handleChange('largoManga', v)} />
                 <InputMeasure label="Ancho de Brazo" value={measures.anchoBrazo} onChange={(v) => handleChange('anchoBrazo', v)} />
                 <InputMeasure label="Contorno de Puño" value={measures.puno} onChange={(v) => handleChange('puno', v)} />
@@ -116,57 +117,57 @@ export const MeasurementsView: React.FC = () => {
         </div>
 
         {/* Right Column: Sidebar info */}
-        <div className="lg:col-span-4 space-y-6">
-          
+        <div className={styles.rightColumn}>
+
           {/* Notes Card */}
-          <section className="bg-surface rounded-xl p-6 md:p-8 shadow-card border border-gray-50">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 rounded-full bg-terracotta/10 flex items-center justify-center text-terracotta">
+          <section className={styles.sectionCard}>
+            <div className={`${styles.sectionHeader} mb-4 border-none pb-0`}>
+              <div className={styles.sectionIconWrapper}>
                 <FileText size={16} />
               </div>
-              <h3 className="font-serif text-xl text-charcoal">Notas Técnicas</h3>
+              <h3 className={`${styles.sectionTitle} text-xl`}>Notas Técnicas</h3>
             </div>
-            <textarea 
-              className="w-full h-40 bg-linen border border-gray-200 rounded-xl p-4 text-sm text-charcoal resize-none focus:outline-none focus:ring-2 focus:ring-terracotta/20 focus:border-terracotta transition-all"
+            <textarea
+              className={styles.notesTextarea}
               placeholder="Notas sobre postura, tipo de tela, preferencias del cliente..."
             ></textarea>
           </section>
 
           {/* Reference Image Placeholder */}
-          <section className="relative overflow-hidden bg-surface rounded-xl p-8 shadow-card border border-gray-50 flex flex-col items-center justify-center text-center gap-4 group">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-terracotta/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
-            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-md mb-2 z-10">
+          <section className={styles.referenceCard}>
+            <div className={styles.blob}></div>
+            <div className={styles.cameraIconWrapper}>
               <Camera size={32} className="text-terracotta" />
             </div>
-            <h3 className="font-serif text-lg text-charcoal z-10">Referencia Visual</h3>
-            <p className="text-charcoal-light text-sm z-10">Sube fotos del cliente o bocetos para referencia.</p>
-            <button className="mt-2 flex items-center gap-2 text-terracotta font-bold text-sm bg-white px-4 py-2 rounded-lg border border-terracotta/20 hover:border-terracotta hover:shadow-md transition-all z-10">
+            <h3 className={styles.referenceTitle}>Referencia Visual</h3>
+            <p className={styles.referenceText}>Sube fotos del cliente o bocetos para referencia.</p>
+            <button className={styles.attachButton}>
               Adjuntar Imagen
             </button>
-            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1558769132-cb1f16413c80?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80')] opacity-5 bg-cover bg-center pointer-events-none"></div>
+            <div className={styles.backgroundPattern}></div>
           </section>
 
           {/* Status Card */}
-          <section className="bg-surface rounded-xl p-6 shadow-card border border-gray-50">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-charcoal-light mb-4">Estado de la ficha</h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 rounded-lg bg-green-50 border border-green-100">
-                <div className="flex items-center gap-2">
-                  <Check size={16} className="text-green-600" />
-                  <span className="text-sm font-medium text-green-900">Creación</span>
+          <section className={styles.sectionCard}>
+            <h3 className={styles.statusTitle}>Estado de la ficha</h3>
+            <div className={styles.statusList}>
+              <div className={`${styles.statusItem} ${styles.statusItemActive}`}>
+                <div className={styles.statusContent}>
+                  <Check size={16} className={styles.checkIcon} />
+                  <span className={styles.statusLabel}>Creación</span>
                 </div>
-                <span className="text-xs text-green-700 font-mono">10:42 AM</span>
+                <span className={styles.statusTime}>10:42 AM</span>
               </div>
-              <div className="flex items-center justify-between p-3 rounded-lg opacity-50">
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded-full border-2 border-charcoal-light"></div>
-                  <span className="text-sm font-medium text-charcoal-light">Revisión</span>
+              <div className={`${styles.statusItem} ${styles.statusItemInactive}`}>
+                <div className={styles.statusContent}>
+                  <div className={styles.inactiveDot}></div>
+                  <span className={styles.statusLabelInactive}>Revisión</span>
                 </div>
               </div>
-               <div className="flex items-center justify-between p-3 rounded-lg opacity-50">
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded-full border-2 border-charcoal-light"></div>
-                  <span className="text-sm font-medium text-charcoal-light">Aprobado</span>
+              <div className={`${styles.statusItem} ${styles.statusItemInactive}`}>
+                <div className={styles.statusContent}>
+                  <div className={styles.inactiveDot}></div>
+                  <span className={styles.statusLabelInactive}>Aprobado</span>
                 </div>
               </div>
             </div>
@@ -179,5 +180,5 @@ export const MeasurementsView: React.FC = () => {
 };
 
 const RulerIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/></svg>
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" /><path d="m14.5 12.5 2-2" /><path d="m11.5 9.5 2-2" /><path d="m8.5 6.5 2-2" /><path d="m17.5 15.5 2-2" /></svg>
 );

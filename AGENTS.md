@@ -51,7 +51,7 @@ Preferencias de diseño:
  - Diseño Mobile First para uso cómodo mientras se toman medidas
 
 Preferencias de estilos: 
- - Eliminar Tailwind CSS y usar CSS nativo o los estilos de sistema de MUI 
+ - Eliminar TailwindCSS y usar CSS nativo o los estilos de sistema de MUI 
  - Colores: Primario Terracotta (#B25B52), Fondo Linen (#F5F5F0), Texto Charcoal (#2C3E50) 
  - Uso de medidas con rem, con un font-size base de 10px 
  - Tipografía: Playfair Display para títulos y Inter para cuerpo de texto 
