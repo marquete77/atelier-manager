@@ -1,0 +1,5 @@
+{
+  "name": "Atelier Manager",
+  "description": "Una PWA sofisticada para la gestión integral de talleres de costura, centralizando clientes, medidas y citas.",
+  "requestFramePermissions": []
+}
