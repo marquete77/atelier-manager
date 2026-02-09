@@ -145,7 +145,7 @@ export const MOCK_APPOINTMENTS: Appointment[] = [
     clientName: 'Sofia Vargas',
     date: '2023-10-09',
     time: '10:00',
-    type: 'Prueba de vestido'
+    type: 'Segunda prueba'
   },
   // Sábado 10
   {

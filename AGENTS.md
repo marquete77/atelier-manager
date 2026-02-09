@@ -30,6 +30,10 @@ Funcionalidades de la aplicación:
 Backend:
  - Base de datos y autenticación en Supabase
  - Login y registro de usuario para proteger los datos de los clientes
+ - **Estrategia**: Arquitectura desacoplada.
+ - **Fase 1**: Backend-as-a-Service con Supabase (PostgreSQL + Auth).
+ - **Fase 2**: API Node.js dedicada para lógica compleja (pagos, multicuentas).
+ - **Seguridad**: RLS y Supabase Auth.
 
 Consideraciones: 
  - La edición de medidas y creación de citas debe poder gestionarse en ventanas modales
