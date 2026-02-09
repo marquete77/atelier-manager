@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
     MessageCircle, Phone, Calendar, Plus, Mail, MapPin,
-    Wallet, Ruler, RefreshCw, History, Check, Scissors
+    Wallet, Ruler, RefreshCw, History, Check, Scissors, Users
 } from 'lucide-react';
 import { ViewState } from '../../../../types';
 import styles from './ClientProfileView.module.css';
@@ -77,6 +77,10 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
                             />
                         </div>
                         <div className={styles.nameSection}>
+                            <div className={styles.breadcrumb}>
+                                <Users size={18} />
+                                <span>Perfil de Cliente</span>
+                            </div>
                             <h1 className={styles.clientName}>{client.name}</h1>
                             <div className={styles.contactActions}>
                                 <a href="#" className={`${styles.contactLink} ${styles.whatsappLink}`}>

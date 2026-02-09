@@ -1,0 +1,56 @@
+.layoutContainer {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--color-linen);
+}
+
+.mainContent {
+    flex: 1;
+    margin-left: 16rem;
+    /* Matches sidebar width */
+    transition: margin-left 0.3s ease-in-out;
+    width: calc(100% - 16rem);
+    height: 100vh;
+    overflow: hidden;
+}
+
+.mainContentCollapsed {
+    margin-left: 5rem;
+    /* Matches collapsed sidebar width */
+    width: calc(100% - 5rem);
+}
+
+.contentWrapper {
+    padding: 0;
+    /* Removed padding for full-screen integration */
+    margin: 0;
+    height: 100%;
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .layoutContainer {
+        height: 100dvh;
+        overflow: hidden;
+        flex-direction: column;
+    }
+
+    .mainContent {
+        margin-left: 0;
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        padding-bottom: 4.5rem;
+        /* Space for mobile nav */
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .mainContentCollapsed {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .contentWrapper {
+        padding: 1rem;
+    }
+}

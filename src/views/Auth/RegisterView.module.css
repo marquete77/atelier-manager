@@ -1,0 +1,224 @@
+/* Reusing styles effectively same as LoginView for consistency */
+.container {
+    min-height: 100vh;
+    background-color: var(--color-linen);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.card {
+    width: 100%;
+    max-width: 28rem;
+    background-color: var(--color-surface);
+    padding: 2rem;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-soft);
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+/* Logo Styles borrowed from Nav */
+.logoText {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: 2rem;
+    color: var(--color-charcoal);
+    margin: 0 0 0.5rem 0;
+}
+
+.logoSuffix {
+    font-family: var(--font-sans);
+    font-weight: 300;
+    color: var(--color-terracotta);
+}
+
+.subtitle {
+    color: var(--color-charcoal-light);
+    font-size: 0.875rem;
+}
+
+.error {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background-color: #FEF2F2;
+    color: var(--color-error);
+    font-size: 0.875rem;
+    border-radius: var(--radius-xl);
+    border: 1px solid #FEE2E2;
+    animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+}
+
+.label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-charcoal-light);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+}
+
+.inputWrapper {
+    position: relative;
+}
+
+.input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background-color: var(--color-linen);
+    border-radius: var(--radius-xl);
+    border: none;
+    font-family: var(--font-sans);
+    color: var(--color-charcoal);
+    outline: none;
+    transition: all 0.2s;
+    box-sizing: border-box;
+}
+
+.input::placeholder {
+    color: rgba(74, 98, 120, 0.5);
+}
+
+.input:focus {
+    box-shadow: 0 0 0 2px rgba(178, 91, 82, 0.2);
+}
+
+.passwordInput {
+    padding-right: 2.5rem;
+}
+
+.eyeButton {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--color-charcoal-light);
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+}
+
+.eyeButton:hover {
+    color: var(--color-terracotta);
+}
+
+.submitButton {
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--color-terracotta);
+    color: white;
+    border-radius: var(--radius-xl);
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.submitButton:hover {
+    background-color: var(--color-terracotta-dark);
+}
+
+.submitButton:focus {
+    box-shadow: 0 0 0 4px rgba(178, 91, 82, 0.2);
+}
+
+.submitButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.footer {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.footerText {
+    color: var(--color-charcoal-light);
+    font-size: 0.875rem;
+}
+
+.link {
+    color: var(--color-terracotta);
+    font-weight: 500;
+    text-decoration: none;
+    transition: text-decoration 0.2s;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+.spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes shake {
+
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+
+    20%,
+    80% {
+        transform: translate3d(2px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(4px, 0, 0);
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
