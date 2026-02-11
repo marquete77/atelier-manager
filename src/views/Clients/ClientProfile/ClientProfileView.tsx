@@ -66,7 +66,7 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
         <div className={styles.profileContainer}>
 
             {/* Header Section */}
-            <div className={styles.header}>
+            <div className="view-header">
                 <div className={styles.profileInfo}>
                     <div className={styles.profileAvatarWrapper}>
                         <div className={styles.avatar}>
@@ -76,12 +76,12 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
                                 className={styles.avatarImg}
                             />
                         </div>
-                        <div className={styles.nameSection}>
-                            <div className={styles.breadcrumb}>
+                        <div className="view-title-section">
+                            <div className="view-breadcrumb">
                                 <Users size={18} />
                                 <span>Perfil de Cliente</span>
                             </div>
-                            <h1 className={styles.clientName}>{client.name}</h1>
+                            <h1 className="view-title">{client.name}</h1>
                             <div className={styles.contactActions}>
                                 <a href="#" className={`${styles.contactLink} ${styles.whatsappLink}`}>
                                     <MessageCircle size={18} /> WhatsApp

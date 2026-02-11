@@ -1,7 +1,7 @@
 .profileContainer {
     width: 100%;
     margin: 0;
-    padding: 2rem 20rem;
+    padding: 2rem max(1.5rem, calc((100% - 1024px) / 2));
     animation: fadeIn 0.4s ease-out forwards;
     background-color: var(--color-linen);
     height: 100%;
@@ -9,21 +9,6 @@
 }
 
 /* Header Section */
-.header {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    padding-bottom: 2.5rem;
-}
-
-@media (min-width: 768px) {
-    .header {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: flex-end;
-    }
-}
-
 .profileInfo {
     display: flex;
     flex-direction: column;
@@ -57,27 +42,6 @@
 .nameSection {
     display: flex;
     flex-direction: column;
-}
-
-.clientName {
-    font-family: var(--font-serif);
-    font-size: 3.5rem;
-    font-weight: 500;
-    color: var(--color-charcoal);
-    line-height: 1.1;
-    margin: 0;
-}
-
-.breadcrumb {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--color-terracotta);
-    font-size: 1rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 0.5rem;
 }
 
 

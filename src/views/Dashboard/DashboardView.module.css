@@ -1,43 +1,11 @@
 .container {
     width: 100%;
     margin: 0;
-    padding: 2rem 20rem;
+    padding: 2rem max(1.5rem, calc((100% - 1200px) / 2));
     animation: fadeIn 0.4s ease-out forwards;
     background-color: var(--color-linen);
     height: 100%;
     overflow-y: auto;
-}
-
-.header {
-    margin-bottom: 2rem;
-}
-
-.title {
-    font-family: var(--font-serif);
-    font-size: 3.5rem;
-    font-weight: 500;
-    color: var(--color-charcoal);
-    margin: 0;
-    line-height: 1.1;
-}
-
-.subtitle {
-    color: var(--color-charcoal-light);
-    margin-top: 0.5rem;
-    font-family: var(--font-sans);
-    font-size: 1.1rem;
-}
-
-.breadcrumb {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--color-terracotta);
-    font-size: 1rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 0.5rem;
 }
 
 .statsGrid {
@@ -216,21 +184,6 @@
 
 .projectCard:hover {
     transform: translateY(-4px);
-}
-
-.projectImageWrapper {
-    width: 4rem;
-    height: 4rem;
-    border-radius: var(--radius-lg);
-    background-color: #E2E8F0;
-    overflow: hidden;
-    flex-shrink: 0;
-}
-
-.projectImage {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
 }
 
 .projectInfo {

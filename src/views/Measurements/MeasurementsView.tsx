@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Save, User, FileText, Camera, Check, Scissors } from 'lucide-react';
-import {InputMeasure} from "@/components/common/InputMeasure/InputMeasure.tsx";
-import {Client} from "@/types.ts";
+import { InputMeasure } from "@/components/common/InputMeasure/InputMeasure.tsx";
+import { Client } from "@/types.ts";
 import styles from './MeasurementsView.module.css';
 
 export const MeasurementsView: React.FC = () => {
@@ -31,13 +31,13 @@ export const MeasurementsView: React.FC = () => {
   return (
     <div className={styles.container}>
       {/* Header Section */}
-      <header className={styles.header}>
-        <div className={styles.headerLeft}>
-          <div className={styles.breadcrumb}>
+      <header className="view-header">
+        <div className="view-title-section">
+          <div className="view-breadcrumb">
             <RulerIcon />
             <span>Nueva Ficha</span>
           </div>
-          <h1 className={styles.title}>Ficha de Medidas</h1>
+          <h1 className="view-title">Ficha de Medidas</h1>
           <div className={styles.metaInfo}>
             <div className={styles.statusDot}></div>
             <span>Cliente: <strong className={styles.clientName}>{activeClient.name}</strong></span>

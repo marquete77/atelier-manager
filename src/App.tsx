@@ -8,6 +8,7 @@ import { ClientsView } from './views/Clients/ClientsView'
 import { MeasurementsView } from './views/Measurements/MeasurementsView'
 import { NewProjectView } from './views/Projects/NewProjectView'
 import { CalendarView } from './views/Calendar/CalendarView'
+import { SettingsView } from './views/Settings/SettingsView'
 import { MainLayout } from './components/layout/MainLayout'
 
 
@@ -28,6 +29,7 @@ function App() {
               <Route path="/measurements" element={<MeasurementsView />} />
               <Route path="/projects" element={<NewProjectView />} />
               <Route path="/calendar" element={<CalendarView />} />
+              <Route path="/settings" element={<SettingsView />} />
               <Route path="/dashboard" element={<Navigate to="/" replace />} />
             </Route>
           </Route>

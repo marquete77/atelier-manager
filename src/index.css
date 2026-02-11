@@ -54,3 +54,60 @@ body {
 .btn-primary:hover {
   background-color: var(--color-terracotta-dark);
 }
+
+/* Estilos para el encabezado de las vistas */
+
+.view-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+@media (min-width: 768px) {
+  .view-header {
+    flex-direction: row;
+    align-items: flex-end;
+  }
+}
+
+.view-title-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.view-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-terracotta);
+  font-size: 1rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.view-title {
+  font-family: var(--font-serif);
+  font-size: 3.5rem;
+  font-weight: 500;
+  color: var(--color-charcoal);
+  margin: 0;
+  line-height: 1.1;
+}
+
+@media (max-width: 768px) {
+  .view-title {
+    font-size: 2.5rem;
+  }
+}
+
+.view-subtitle {
+  color: var(--color-charcoal-light);
+  margin-top: 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 1.1rem;
+}

@@ -1,25 +1,14 @@
 .newProjectContainer {
     width: 100%;
     margin: 0;
-    padding: 2rem 20rem;
+    padding: 2rem max(1.5rem, calc((100% - 1024px) / 2));
     animation: fadeIn 0.4s ease-out forwards;
     background-color: var(--color-linen);
     height: 100%;
     overflow-y: auto;
 }
 
-.header {
-    margin-bottom: 2.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-}
-
-.headerLeft {
-    display: flex;
-    flex-direction: column;
-}
-
+/* Header Section */
 .clientInfo {
     display: flex;
     align-items: center;
@@ -80,41 +69,9 @@
     background-color: var(--color-terracotta-dark);
 }
 
-.breadcrumb {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--color-terracotta);
-    font-size: 1rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 0.5rem;
-}
-
-.title {
-    font-family: var(--font-serif);
-    font-size: 3.5rem;
-    font-weight: 500;
-    color: var(--color-charcoal);
-    margin: 0;
-    line-height: 1.1;
-}
-
-@media (max-width: 768px) {
-    .title {
-        font-size: 2.25rem;
-    }
-
-    .breadcrumb {
-        font-size: 0.875rem;
-    }
-}
-
 .subtitle {
-    color: var(--color-charcoal-light);
-    font-size: 1.1rem;
-    margin-top: 0.5rem;
+    display: none;
+    /* Removed in favor of clientInfo */
 }
 
 .typeSelector {

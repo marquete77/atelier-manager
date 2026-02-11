@@ -9,13 +9,13 @@ export const NewProjectView: React.FC = () => {
 
     return (
         <div className={styles.newProjectContainer}>
-            <header className={styles.header}>
-                <div className={styles.headerLeft}>
-                    <div className={styles.breadcrumb}>
+            <header className="view-header">
+                <div className="view-title-section">
+                    <div className="view-breadcrumb">
                         <PlusCircle size={18} />
                         <span>Inicio de Trabajo</span>
                     </div>
-                    <h1 className={styles.title}>Nuevo Proyecto</h1>
+                    <h1 className="view-title">Nuevo Proyecto</h1>
                     <div className={styles.clientInfo}>
                         <div className={styles.clientDot}></div>
                         <span>Cliente: <span className={styles.clientName}>Maria Gonzalez</span></span>

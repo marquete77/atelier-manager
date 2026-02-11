@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { LayoutDashboard, Users, Ruler, Calendar, Settings, LogOut, PenTool, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 import { ViewState } from '@/types';
 import styles from './Nav.module.css';
 
@@ -11,6 +12,7 @@ interface NavProps {
 }
 
 export const Nav: React.FC<NavProps> = ({ currentView, onChangeView, isCollapsed, onToggleCollapse }) => {
+    const { user, signOut } = useAuth();
 
     const navItems = [
         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -23,6 +25,9 @@ export const Nav: React.FC<NavProps> = ({ currentView, onChangeView, isCollapsed
     const toggleSidebar = () => {
         onToggleCollapse();
     };
+
+    const userDisplayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Usuario';
+    const userDisplayRole = user?.user_metadata?.role || 'Propietaria';
 
     return (
         <>
@@ -58,17 +63,19 @@ export const Nav: React.FC<NavProps> = ({ currentView, onChangeView, isCollapsed
                 </nav>
 
                 <div className={styles.userSection}>
-                    <button className={styles.navButton} title={isCollapsed ? 'Configuración' : ''}>
-                        <Settings size={20} />
-                        <span className={styles.navLabel}>Configuración</span>
-                    </button>
                     <div className={styles.userDivider}>
-                        <img src="https://images.unsplash.com/photo-1589465885857-44edb59ef526?auto=format&fit=crop&q=80&w=200" alt="User" className={styles.userAvatar} />
-                        <div className={styles.userInfo}>
-                            <p className={styles.userName}>Elena Sastre</p>
-                            <p className={styles.userRole}>Propietaria</p>
+                        <div className={styles.avatarPlaceholderGlobal}>
+                            {userDisplayName.charAt(0).toUpperCase()}
                         </div>
-                        <button className={styles.logoutButton} title="Cerrar sesión">
+                        <div className={styles.userInfo}>
+                            <p className={styles.userName}>{userDisplayName}</p>
+                            <p className={styles.userRole}>{userDisplayRole}</p>
+                        </div>
+                        <button
+                            className={styles.logoutButton}
+                            onClick={() => signOut()}
+                            title="Cerrar sesión"
+                        >
                             <LogOut size={16} />
                         </button>
                     </div>
