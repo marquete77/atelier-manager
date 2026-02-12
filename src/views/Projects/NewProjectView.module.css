@@ -158,6 +158,173 @@
 }
 
 
-.mainForm {
-    /* Keep this placeholder if needed, but it's now in ProjectForm */
+.mainLayout {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+@media (max-width: 1024px) {
+    .mainLayout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.formColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.detailsCard {
+    background: var(--color-surface);
+    border-radius: var(--radius-xl);
+    padding: 2rem;
+    box-shadow: var(--shadow-card);
+}
+
+.sectionTitle {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    color: var(--color-charcoal);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.budgetCard {
+    background: var(--color-surface);
+    border-radius: var(--radius-xl);
+    padding: 2rem;
+    box-shadow: var(--shadow-card);
+    border: 1px solid rgba(178, 91, 82, 0.1);
+    position: sticky;
+    top: 2rem;
+}
+
+.budgetTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-charcoal);
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-linen);
+}
+
+.budgetRow {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    color: var(--color-charcoal-light);
+}
+
+.budgetRow.total {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 2px dashed var(--color-linen);
+    color: var(--color-charcoal);
+    font-weight: 700;
+}
+
+.balanceHighlight {
+    background: rgba(178, 91, 82, 0.05);
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    margin-top: 1.5rem;
+    text-align: center;
+    border: 1px solid rgba(178, 91, 82, 0.2);
+}
+
+.balanceLabel {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--color-terracotta);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.balanceValue {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--color-terracotta);
+    font-family: var(--font-serif);
+}
+
+.currency {
+    font-size: 1.25rem;
+    margin-left: 0.25rem;
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-charcoal-light);
+}
+
+.input {
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-lg);
+    border: 1.5px solid #E2E8F0;
+    background: #FAFAF7;
+    transition: all 0.2s;
+    font-size: 1rem;
+    width: 100%;
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--color-terracotta);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(178, 91, 82, 0.1);
+}
+
+.textArea {
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-lg);
+    border: 1.5px solid #E2E8F0;
+    background: #FAFAF7;
+    transition: all 0.2s;
+    font-size: 1rem;
+    width: 100%;
+    min-height: 100px;
+    resize: vertical;
+}
+
+.textArea:focus {
+    outline: none;
+    border-color: var(--color-terracotta);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(178, 91, 82, 0.1);
+}
+
+.imageUpload {
+    border: 2px dashed #E2E8F0;
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    text-align: center;
+    color: var(--color-charcoal-light);
+    background: #FAFAF7;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.imageUpload:hover {
+    border-color: var(--color-terracotta);
+    background: white;
+    color: var(--color-terracotta);
 }

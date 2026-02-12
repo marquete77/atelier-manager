@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
     MessageCircle, Phone, Calendar, Plus, Mail, MapPin,
     Wallet, Ruler, RefreshCw, History, Check, Scissors, Users
@@ -9,6 +10,31 @@ import styles from './ClientProfileView.module.css';
 interface ClientProfileViewProps {
     onChangeView?: (view: ViewState) => void;
 }
+
+// Animation Variants
+const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.1,
+            duration: 0.6,
+            ease: "easeOut"
+        }
+    }
+};
+
+const itemVariants = {
+    hidden: { opacity: 0, y: 15 },
+    show: {
+        opacity: 1,
+        y: 0,
+        transition: {
+            duration: 0.5,
+            ease: "easeOut"
+        }
+    }
+};
 
 export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeView }) => {
     // Mock data based on the provided HTML reference
@@ -63,10 +89,15 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
     };
 
     return (
-        <div className={styles.profileContainer}>
+        <motion.div
+            className={styles.profileContainer}
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+        >
 
             {/* Header Section */}
-            <div className="view-header">
+            <motion.div className="view-header" variants={itemVariants}>
                 <div className={styles.profileInfo}>
                     <div className={styles.profileAvatarWrapper}>
                         <div className={styles.avatar}>
@@ -95,25 +126,36 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
                 </div>
 
                 <div className={styles.headerButtons}>
-                    <button className={`${styles.actionButton} ${styles.secondaryButton}`}>
+                    <motion.button
+                        className={`${styles.actionButton} ${styles.secondaryButton}`}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                    >
                         <Calendar size={20} />
                         Nueva Cita
-                    </button>
-                    <button
+                    </motion.button>
+                    <motion.button
                         className={`${styles.actionButton} ${styles.primaryButton}`}
                         onClick={() => onChangeView?.('new-project')}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                     >
                         <Plus size={20} />
                         Nuevo Proyecto
-                    </button>
+                    </motion.button>
                 </div>
-            </div>
+            </motion.div>
 
             <div className={styles.gridContainer}>
 
                 {/* Sidebar: Contact & Notes */}
                 <div className={styles.sidebar}>
-                    <section className={styles.card}>
+                    <motion.section
+                        className={styles.card}
+                        variants={itemVariants}
+                        whileHover={{ y: -2 }}
+                        transition={{ type: "tween", duration: 0.2 }}
+                    >
                         <h3 className={styles.cardTitle}>Información de Contacto</h3>
                         <div className={styles.contactList}>
                             <div className={styles.contactItem}>
@@ -139,9 +181,14 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
                                 <span className={styles.balanceValue}>${client.balance}</span>
                             </div>
                         </div>
-                    </section>
+                    </motion.section>
 
-                    <section className={styles.card}>
+                    <motion.section
+                        className={styles.card}
+                        variants={itemVariants}
+                        whileHover={{ y: -2 }}
+                        transition={{ type: "tween", duration: 0.2 }}
+                    >
                         <div className={styles.cardTitle}>
                             <span>Notas Generales</span>
                             <button className={styles.editLink}>Editar</button>
@@ -149,14 +196,19 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
                         <p className={styles.notesText}>
                             "{client.notes}"
                         </p>
-                    </section>
+                    </motion.section>
                 </div>
 
                 {/* Main Content: Measures & History */}
                 <div className={styles.mainContent}>
 
                     {/* Measurements Section */}
-                    <section className={styles.mainCard}>
+                    <motion.section
+                        className={styles.mainCard}
+                        variants={itemVariants}
+                        whileHover={{ y: -2 }}
+                        transition={{ duration: 0.2 }}
+                    >
                         <div className={styles.sectionHeader}>
                             <div className={styles.sectionTitleGroup}>
                                 <div className={styles.sectionIconWrapper}>
@@ -166,10 +218,14 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
                             </div>
                             <div className={styles.sectionActions}>
                                 <span className={styles.lastUpdate}>Última actualización: hace 3 meses</span>
-                                <button className={styles.refreshButton}>
+                                <motion.button
+                                    className={styles.refreshButton}
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                >
                                     <RefreshCw size={18} />
                                     Actualizar Medidas
-                                </button>
+                                </motion.button>
                             </div>
                         </div>
 
@@ -207,10 +263,10 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
                                 <p className={styles.measureValue}>{client.measures.brazo} <span className={styles.measureUnit}>cm</span></p>
                             </div>
                         </div>
-                    </section>
+                    </motion.section>
 
                     {/* Project History */}
-                    <section className={styles.timeline}>
+                    <motion.section className={styles.timeline} variants={itemVariants}>
                         <div className={styles.sectionTitleGroup}>
                             <div className={styles.historyIconWrapper}>
                                 <History size={24} />
@@ -219,7 +275,13 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
                         </div>
 
                         {client.projects.map((project, index) => (
-                            <div key={project.id} className={styles.timelineItem}>
+                            <motion.div
+                                key={project.id}
+                                className={styles.timelineItem}
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.3 + index * 0.1 }}
+                            >
                                 <div className={`${styles.timelineIconWrapper} ${project.status === 'Entregado' ? styles.timelineIconActive : ''}`}>
                                     <span className={styles.timelineIcon}>
                                         <StatusIcon status={project.status} />
@@ -237,12 +299,12 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
                                         <p className={styles.timelinePrice}>${project.price.toFixed(2)}</p>
                                     </div>
                                 </div>
-                            </div>
+                            </motion.div>
                         ))}
-                    </section>
+                    </motion.section>
 
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 };

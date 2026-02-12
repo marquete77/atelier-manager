@@ -62,6 +62,17 @@ export const Nav: React.FC<NavProps> = ({ currentView, onChangeView, isCollapsed
                     ))}
                 </nav>
 
+                <div className={styles.separationContainer}>
+                    <button
+                        onClick={() => onChangeView('settings')}
+                        className={`${styles.navButton} ${currentView === 'settings' ? styles.navButtonActive : ''}`}
+                        title={isCollapsed ? "Configuración" : ''}
+                    >
+                        <Settings size={20} strokeWidth={currentView === 'settings' ? 2.5 : 2} />
+                        <span className={styles.navLabel}>Configuración</span>
+                    </button>
+                </div>
+
                 <div className={styles.userSection}>
                     <div className={styles.userDivider}>
                         <div className={styles.avatarPlaceholderGlobal}>
@@ -97,6 +108,16 @@ export const Nav: React.FC<NavProps> = ({ currentView, onChangeView, isCollapsed
                         <span className={styles.mobileNavLabel}>{item.label}</span>
                     </button>
                 ))}
+                <button
+                    onClick={() => onChangeView('settings')}
+                    className={`${styles.mobileNavItem} ${currentView === 'settings' ? styles.mobileNavItemActive : ''}`}
+                >
+                    <Settings
+                        size={24}
+                        className={currentView === 'settings' ? styles.mobileNavIconActive : styles.mobileNavIcon}
+                    />
+                    <span className={styles.mobileNavLabel}>Configuración</span>
+                </button>
             </nav>
         </>
     );

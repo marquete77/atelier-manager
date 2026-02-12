@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Calendar as CalendarIcon,
   FileText,
@@ -31,6 +32,41 @@ interface ProjectEntry {
     full_name: string;
   };
 }
+
+// Animation Variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 30
+    }
+  }
+};
+
+const listVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.07
+    }
+  }
+};
 
 export const DashboardView: React.FC = () => {
   const { user } = useAuth();
@@ -124,8 +160,13 @@ export const DashboardView: React.FC = () => {
   }
 
   return (
-    <div className={styles.container}>
-      <header className="view-header">
+    <motion.div
+      className={styles.container}
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+    >
+      <motion.header className="view-header" variants={itemVariants}>
         <div className="view-title-section">
           <div className="view-breadcrumb">
             <CalendarIcon size={18} />
@@ -136,9 +177,9 @@ export const DashboardView: React.FC = () => {
             {new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
         </div>
-      </header>
+      </motion.header>
 
-      <div className={styles.statsGrid}>
+      <motion.div className={styles.statsGrid} variants={listVariants}>
         <StatCard
           label="Citas para hoy"
           value={stats.appointmentsToday.toString()}
@@ -157,38 +198,50 @@ export const DashboardView: React.FC = () => {
           icon={TrendingUp}
           type="revenue"
         />
-      </div>
+      </motion.div>
 
       <div className={styles.mainGrid}>
-        <section className={styles.section}>
+        <motion.section className={styles.section} variants={itemVariants}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Citas Próximas</h2>
-            <button className={styles.viewAllLink}>Ver agenda <ChevronRight size={16} /></button>
+            <motion.button
+              className={styles.viewAllLink}
+              whileHover={{ x: 5 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Ver agenda <ChevronRight size={16} />
+            </motion.button>
           </div>
-          <div className={styles.cardContainer}>
+          <motion.div className={styles.cardContainer} variants={listVariants}>
             {recentAppointments.length > 0 ? recentAppointments.map((apt) => (
               <AppointmentItem key={apt.id} apt={apt} />
             )) : (
               <div className="p-8 text-center text-gray-400">No hay citas programadas</div>
             )}
-          </div>
-        </section>
+          </motion.div>
+        </motion.section>
 
-        <section className={styles.section}>
+        <motion.section className={styles.section} variants={itemVariants}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Proyectos Recientes</h2>
-            <button className={styles.viewAllLink}>Ver todos <ChevronRight size={16} /></button>
+            <motion.button
+              className={styles.viewAllLink}
+              whileHover={{ x: 5 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Ver todos <ChevronRight size={16} />
+            </motion.button>
           </div>
-          <div className={styles.projectsList}>
+          <motion.div className={styles.projectsList} variants={listVariants}>
             {recentProjects.length > 0 ? recentProjects.map((project) => (
               <ProjectCard key={project.id} project={project} />
             )) : (
               <div className="p-8 text-center text-gray-400">No hay proyectos activos</div>
             )}
-          </div>
-        </section>
+          </motion.div>
+        </motion.section>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
@@ -204,7 +257,11 @@ const StatCard = ({ icon: Icon, label, value, type }: any) => {
   const colors = getColors();
 
   return (
-    <div className={styles.statCard}>
+    <motion.div
+      className={styles.statCard}
+      variants={itemVariants}
+      whileHover={{ y: -5, transition: { duration: 0.2 } }}
+    >
       <div className={styles.statHeader}>
         <div className={`${styles.statIconWrapper} ${colors.bg} ${colors.icon}`}>
           <Icon size={20} />
@@ -215,12 +272,16 @@ const StatCard = ({ icon: Icon, label, value, type }: any) => {
       </div>
       <p className={styles.statLabel}>{label}</p>
       <h3 className={styles.statValue}>{value}</h3>
-    </div>
+    </motion.div>
   );
 };
 
 const AppointmentItem = ({ apt }: { apt: AppointmentEntry }) => (
-  <div className={styles.appointmentItem}>
+  <motion.div
+    className={styles.appointmentItem}
+    variants={itemVariants}
+    whileHover={{ x: 4, backgroundColor: "#F8FAFC" }}
+  >
     <div className={styles.timeBoxInactive}>
       <span className={styles.timeText}>
         {new Date(apt.start_time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
@@ -233,11 +294,15 @@ const AppointmentItem = ({ apt }: { apt: AppointmentEntry }) => (
       </div>
       <p className={styles.appointmentStatus}>{apt.status}</p>
     </div>
-  </div>
+  </motion.div>
 );
 
 const ProjectCard = ({ project }: { project: ProjectEntry }) => (
-  <div className={styles.projectCard}>
+  <motion.div
+    className={styles.projectCard}
+    variants={itemVariants}
+    whileHover={{ y: -4, boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)" }}
+  >
     <div className={styles.projectInfo}>
       <div className={styles.projectHeader}>
         <h4 className={styles.projectName}>{project.title}</h4>
@@ -253,5 +318,5 @@ const ProjectCard = ({ project }: { project: ProjectEntry }) => (
         ></div>
       </div>
     </div>
-  </div>
+  </motion.div>
 );

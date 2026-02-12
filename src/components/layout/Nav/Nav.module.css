@@ -162,6 +162,19 @@
     opacity: 0;
 }
 
+.separationContainer {
+    padding: 0 1rem;
+    margin-top: auto;
+    /* Empuja hacia abajo */
+    margin-bottom: 0.5rem;
+}
+
+.sidebarCollapsed .separationContainer {
+    padding: 0 0.5rem;
+    display: flex;
+    justify-content: center;
+}
+
 /* User Section */
 .userSection {
     padding: 1rem;

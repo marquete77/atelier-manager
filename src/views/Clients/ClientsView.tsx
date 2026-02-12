@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Plus, Phone, Mail, ChevronRight, MoreVertical, Loader2 } from 'lucide-react';
 import { supabase } from "@/config/supabase";
 import { useAuth } from "@/hooks/useAuth";
@@ -18,6 +19,35 @@ interface Client {
 interface ClientsViewProps {
   onChangeView?: (view: ViewState) => void;
 }
+
+// Animation Variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05
+    }
+  }
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 30
+    }
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.9,
+    transition: { duration: 0.2 }
+  }
+};
 
 export const ClientsView: React.FC<ClientsViewProps> = ({ onChangeView }) => {
   const { user } = useAuth();
@@ -57,27 +87,35 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ onChangeView }) => {
   );
 
   return (
-    <div className={styles.container}>
+    <motion.div
+      className={styles.container}
+      initial="hidden"
+      animate="show"
+      variants={containerVariants}
+    >
       <header className="view-header">
-        <div className="view-title-section">
+        <motion.div className="view-title-section" variants={cardVariants}>
           <div className="view-breadcrumb">
             <Search size={18} />
             <span>Directorio de Clientes</span>
           </div>
           <h1 className="view-title">Gestión de Clientes</h1>
           <p className="view-subtitle">Administra tus contactos y proyectos.</p>
-        </div>
-        <button
+        </motion.div>
+        <motion.button
           onClick={() => setIsModalOpen(true)}
           className={styles.newClientButton}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.95 }}
+          variants={cardVariants}
         >
           <Plus size={20} />
           <span>Nuevo Cliente</span>
-        </button>
+        </motion.button>
       </header>
 
       {/* Search Bar */}
-      <div className={styles.searchBar}>
+      <motion.div className={styles.searchBar} variants={cardVariants}>
         <div className={styles.searchIcon}>
           <Search size={20} />
         </div>
@@ -88,62 +126,96 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ onChangeView }) => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-      </div>
+      </motion.div>
 
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20 opacity-50">
           <Loader2 className="animate-spin mb-4" size={40} />
           <p>Cargando clientes...</p>
         </div>
-      ) : filteredClients.length > 0 ? (
-        <div className={styles.clientsGrid}>
-          {filteredClients.map((client) => (
-            <div key={client.id} className={styles.clientCard}>
-              <div className={styles.activeStrip}></div>
-
-              <div className={styles.cardHeader}>
-                <div className={styles.userInfo}>
-                  <div className={styles.avatarPlaceholder}>
-                    {client.full_name.charAt(0)}
-                  </div>
-                  <div>
-                    <h3 className={styles.userName}>{client.full_name}</h3>
-                    <span className={`${styles.statusBadge} ${styles.statusActive}`}>
-                      Activo
-                    </span>
-                  </div>
-                </div>
-                <button className={styles.moreButton}>
-                  <MoreVertical size={20} />
-                </button>
-              </div>
-
-              <div className={styles.cardBody}>
-                <div className={styles.contactRow}>
-                  <Phone size={16} />
-                  <span>{client.phone || 'Sin teléfono'}</span>
-                </div>
-                <div className={styles.contactRow}>
-                  <Mail size={16} />
-                  <span className="truncate">{client.email || 'Sin email'}</span>
-                </div>
-
-                <div className={styles.cardFooter}>
-                  <button
-                    className={styles.viewProfileLink}
-                    onClick={() => onChangeView?.('client-profile')}
-                  >
-                    Ver Perfil <ChevronRight size={16} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
       ) : (
-        <div className="text-center py-20 opacity-50">
-          <p>No se encontraron clientes.</p>
-        </div>
+        <AnimatePresence mode="popLayout">
+          {filteredClients.length > 0 ? (
+            <motion.div
+              className={styles.clientsGrid}
+              layout
+            >
+              {filteredClients.map((client) => (
+                <motion.div
+                  key={client.id}
+                  className={styles.clientCard}
+                  variants={cardVariants}
+                  layout
+                  initial="hidden"
+                  animate="show"
+                  exit="exit"
+                  whileHover={{
+                    y: -4,
+                    boxShadow: "0 10px 20px rgba(0,0,0,0.05)",
+                    transition: { duration: 0.2 }
+                  }}
+                >
+                  <div className={styles.activeStrip}></div>
+
+                  <div className={styles.cardHeader}>
+                    <div className={styles.userInfo}>
+                      <motion.div
+                        className={styles.avatarPlaceholder}
+                        layoutId={`avatar-${client.id}`}
+                      >
+                        {client.full_name.charAt(0)}
+                      </motion.div>
+                      <div>
+                        <motion.h3
+                          className={styles.userName}
+                          layoutId={`name-${client.id}`}
+                        >
+                          {client.full_name}
+                        </motion.h3>
+                        <span className={`${styles.statusBadge} ${styles.statusActive}`}>
+                          Activo
+                        </span>
+                      </div>
+                    </div>
+                    <button className={styles.moreButton}>
+                      <MoreVertical size={20} />
+                    </button>
+                  </div>
+
+                  <div className={styles.cardBody}>
+                    <div className={styles.contactRow}>
+                      <Phone size={16} />
+                      <span>{client.phone || 'Sin teléfono'}</span>
+                    </div>
+                    <div className={styles.contactRow}>
+                      <Mail size={16} />
+                      <span className="truncate">{client.email || 'Sin email'}</span>
+                    </div>
+
+                    <div className={styles.cardFooter}>
+                      <motion.button
+                        className={styles.viewProfileLink}
+                        onClick={() => onChangeView?.('client-profile')}
+                        whileHover={{ x: 3 }}
+                      >
+                        Ver Perfil <ChevronRight size={16} />
+                      </motion.button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          ) : (
+            <motion.div
+              className="text-center py-20 opacity-50"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <p>No se encontraron clientes.</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
       )}
 
       <CreateClientModal
@@ -153,6 +225,6 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ onChangeView }) => {
           fetchClients(); // Refresh list after adding
         }}
       />
-    </div>
+    </motion.div>
   );
 };

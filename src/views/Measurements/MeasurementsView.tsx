@@ -1,8 +1,34 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Save, User, FileText, Camera, Check, Scissors } from 'lucide-react';
 import { InputMeasure } from "@/components/common/InputMeasure/InputMeasure.tsx";
 import { Client } from "@/types.ts";
 import styles from './MeasurementsView.module.css';
+
+// Animation Variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      duration: 0.5,
+      ease: "easeOut"
+    }
+  }
+};
+
+const sectionVariants = {
+  hidden: { opacity: 0, y: 10 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: "easeOut"
+    }
+  }
+};
 
 export const MeasurementsView: React.FC = () => {
   const [activeClient] = useState<Partial<Client>>({ name: "Maria Gonzalez", id: "1" });
@@ -29,9 +55,14 @@ export const MeasurementsView: React.FC = () => {
   };
 
   return (
-    <div className={styles.container}>
+    <motion.div
+      className={styles.container}
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+    >
       {/* Header Section */}
-      <header className="view-header">
+      <motion.header className="view-header" variants={sectionVariants}>
         <div className="view-title-section">
           <div className="view-breadcrumb">
             <RulerIcon />
@@ -50,19 +81,29 @@ export const MeasurementsView: React.FC = () => {
           <button className={styles.cancelButton}>
             Cancelar
           </button>
-          <button className={styles.saveButton}>
+          <motion.button
+            className={styles.saveButton}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
             <Save size={18} />
             Guardar Medidas
-          </button>
+          </motion.button>
         </div>
-      </header>
+      </motion.header>
 
       <div className={styles.mainGrid}>
         {/* Left Column: Form Blocks */}
         <div className={styles.leftColumn}>
 
           {/* Upper Body Section */}
-          <section className={styles.sectionCard}>
+          <motion.section
+            className={styles.sectionCard}
+            variants={sectionVariants}
+            whileHover={{ y: -2 }}
+            transition={{ type: "tween", duration: 0.2 }}
+            layout
+          >
             <div className={styles.sectionHeader}>
               <div className={styles.sectionIconWrapper}>
                 <User size={20} />
@@ -79,11 +120,17 @@ export const MeasurementsView: React.FC = () => {
                 <InputMeasure label="Altura de Busto" value={measures.alturaBusto} onChange={(v) => handleChange('alturaBusto', v)} />
               </div>
             </div>
-          </section>
+          </motion.section>
 
           <div className={styles.subGrid}>
             {/* Lower Body Section */}
-            <section className={`${styles.sectionCard} ${styles.heightFull}`}>
+            <motion.section
+              className={`${styles.sectionCard} ${styles.heightFull}`}
+              variants={sectionVariants}
+              whileHover={{ y: -2 }}
+              transition={{ type: "tween", duration: 0.2 }}
+              layout
+            >
               <div className={styles.sectionHeader}>
                 <div className={styles.sectionIconWrapper}>
                   <User size={20} className="transform rotate-180" />
@@ -96,10 +143,16 @@ export const MeasurementsView: React.FC = () => {
                 <InputMeasure label="Largo de Tiro" value={measures.largoTiro} onChange={(v) => handleChange('largoTiro', v)} />
                 <InputMeasure label="Largo Total" value={measures.largoTotal} onChange={(v) => handleChange('largoTotal', v)} />
               </div>
-            </section>
+            </motion.section>
 
             {/* Sleeves Section */}
-            <section className={`${styles.sectionCard} ${styles.heightFull}`}>
+            <motion.section
+              className={`${styles.sectionCard} ${styles.heightFull}`}
+              variants={sectionVariants}
+              whileHover={{ y: -2 }}
+              transition={{ type: "tween", duration: 0.2 }}
+              layout
+            >
               <div className={styles.sectionHeader}>
                 <div className={styles.sectionIconWrapper}>
                   <Scissors size={20} />
@@ -112,7 +165,7 @@ export const MeasurementsView: React.FC = () => {
                 <InputMeasure label="Contorno de Puño" value={measures.puno} onChange={(v) => handleChange('puno', v)} />
                 <InputMeasure label="Sisa" value={measures.sisa} onChange={(v) => handleChange('sisa', v)} />
               </div>
-            </section>
+            </motion.section>
           </div>
         </div>
 
@@ -120,7 +173,13 @@ export const MeasurementsView: React.FC = () => {
         <div className={styles.rightColumn}>
 
           {/* Notes Card */}
-          <section className={styles.sectionCard}>
+          <motion.section
+            className={styles.sectionCard}
+            variants={sectionVariants}
+            whileHover={{ y: -2 }}
+            transition={{ type: "tween", duration: 0.2 }}
+            layout
+          >
             <div className={`${styles.sectionHeader} mb-4 border-none pb-0`}>
               <div className={styles.sectionIconWrapper}>
                 <FileText size={16} />
@@ -131,10 +190,16 @@ export const MeasurementsView: React.FC = () => {
               className={styles.notesTextarea}
               placeholder="Notas sobre postura, tipo de tela, preferencias del cliente..."
             ></textarea>
-          </section>
+          </motion.section>
 
           {/* Reference Image Placeholder */}
-          <section className={styles.referenceCard}>
+          <motion.section
+            className={styles.referenceCard}
+            variants={sectionVariants}
+            whileHover={{ y: -2 }}
+            transition={{ type: "tween", duration: 0.2 }}
+            layout
+          >
             <div className={styles.blob}></div>
             <div className={styles.cameraIconWrapper}>
               <Camera size={32} className="text-terracotta" />
@@ -145,10 +210,16 @@ export const MeasurementsView: React.FC = () => {
               Adjuntar Imagen
             </button>
             <div className={styles.backgroundPattern}></div>
-          </section>
+          </motion.section>
 
           {/* Status Card */}
-          <section className={styles.sectionCard}>
+          <motion.section
+            className={styles.sectionCard}
+            variants={sectionVariants}
+            whileHover={{ y: -2 }}
+            transition={{ type: "tween", duration: 0.2 }}
+            layout
+          >
             <h3 className={styles.statusTitle}>Estado de la ficha</h3>
             <div className={styles.statusList}>
               <div className={`${styles.statusItem} ${styles.statusItemActive}`}>
@@ -171,11 +242,11 @@ export const MeasurementsView: React.FC = () => {
                 </div>
               </div>
             </div>
-          </section>
+          </motion.section>
 
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

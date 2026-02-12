@@ -10,6 +10,7 @@ import {
   Settings,
   Bell
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from "@/config/supabase";
 import { useAuth } from "@/hooks/useAuth";
 import styles from './CalendarView.module.css';
@@ -41,6 +42,8 @@ export const CalendarView: React.FC = () => {
   // Date Logic States
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [direction, setDirection] = useState(0);
+  const [enabledCategories, setEnabledCategories] = useState<string[]>(['fitting', 'measurement', 'delivery']);
 
   const daysLabels = ['LUNES', 'MARTES', 'MIÉRCOLES', 'JUEVES', 'VIERNES', 'SÁBADO', 'DOMINGO'];
   const miniDaysLabels = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
@@ -147,13 +150,20 @@ export const CalendarView: React.FC = () => {
   };
 
   const changeMonth = (offset: number) => {
+    setDirection(offset);
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + offset, 1));
   };
 
   if (loading && appointments.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full opacity-50">
-        <Loader2 className="animate-spin mb-4" size={48} />
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+          className="mb-4"
+        >
+          <Loader2 size={48} className="text-terracotta" />
+        </motion.div>
         <p>Cargando agenda premium...</p>
       </div>
     );
@@ -162,13 +172,14 @@ export const CalendarView: React.FC = () => {
   return (
     <div className={styles.calendarContainer}>
       <aside className={styles.sidebar}>
-        <button
+        <motion.button
           className={styles.newAppointmentButton}
           onClick={() => { setNewSlot(undefined); setIsNewModalOpen(true); }}
+          whileTap={{ scale: 0.95 }}
         >
           <Plus size={20} strokeWidth={3} />
           <span>Nueva Cita</span>
-        </button>
+        </motion.button>
 
         <section className={styles.sidebarSection}>
           <div className={styles.flexBetween} style={{ marginBottom: '1rem' }}>
@@ -182,17 +193,41 @@ export const CalendarView: React.FC = () => {
           </div>
           <div className={styles.miniCalendarGrid}>
             {miniDaysLabels.map((d, i) => <span key={i} className={styles.miniDayLabel}>{d}</span>)}
-            {renderCalendarGrid().slice(0, 35).map((item, idx) => (
-              <div
-                key={idx}
-                className={`${styles.miniDayNumber} 
-                                    ${item.isPadding ? styles.miniDayPadding : ''} 
-                                    ${isToday(item.day, item.month, item.year) ? styles.miniDayActive : ''}
-                                `}
-              >
-                {item.day}
-              </div>
-            ))}
+            {renderCalendarGrid().slice(0, 35).map((item, idx) => {
+              const isSelected = selectedDate.getDate() === item.day &&
+                selectedDate.getMonth() === item.month &&
+                selectedDate.getFullYear() === item.year;
+              return (
+                <div
+                  key={idx}
+                  className={`${styles.miniDayNumber} 
+                                      ${item.isPadding ? styles.miniDayPadding : ''} 
+                                      ${isToday(item.day, item.month, item.year) ? styles.miniDayActive : ''}
+                                  `}
+                  onClick={() => setSelectedDate(new Date(item.year, item.month, item.day))}
+                  style={{ position: 'relative' }}
+                >
+                  {isSelected && (
+                    <motion.div
+                      layoutId="activeDayCircle"
+                      className={styles.activeDayCircle}
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: 'rgba(178, 91, 82, 0.1)',
+                        borderRadius: '50%',
+                        zIndex: -1
+                      }}
+                      transition={{ type: "spring", stiffness: 150, damping: 25 }}
+                    />
+                  )}
+                  {item.day}
+                </div>
+              );
+            })}
           </div>
         </section>
 
@@ -217,37 +252,43 @@ export const CalendarView: React.FC = () => {
         <section className={styles.sidebarSection}>
           <h3 className={styles.sectionHeading}>CATEGORÍAS</h3>
           <div className={styles.filterList}>
-            <div className={styles.filterItem}>
-              <div className={styles.customCheck} style={{ borderColor: '#B25B52' }}>
-                <input type="checkbox" defaultChecked />
-                <div className={styles.checkInner} style={{ backgroundColor: '#B25B52' }}></div>
-              </div>
-              <span>Pruebas</span>
-              <div className={styles.dot} style={{ backgroundColor: '#B25B52' }}></div>
-            </div>
-            <div className={styles.filterItem}>
-              <div className={styles.customCheck} style={{ borderColor: '#60A5FA' }}>
-                <input type="checkbox" defaultChecked />
-                <div className={styles.checkInner} style={{ backgroundColor: '#60A5FA' }}></div>
-              </div>
-              <span>Mediciones</span>
-              <div className={styles.dot} style={{ backgroundColor: '#60A5FA' }}></div>
-            </div>
-            <div className={styles.filterItem}>
-              <div className={styles.customCheck} style={{ borderColor: '#4CAF50' }}>
-                <input type="checkbox" defaultChecked />
-                <div className={styles.checkInner} style={{ backgroundColor: '#4CAF50' }}></div>
-              </div>
-              <span>Entregas</span>
-              <div className={styles.dot} style={{ backgroundColor: '#4CAF50' }}></div>
+            <div className={styles.filterList}>
+              {[
+                { id: 'fitting', label: 'Pruebas', color: '#B25B52' },
+                { id: 'measurement', label: 'Mediciones', color: '#60A5FA' },
+                { id: 'delivery', label: 'Entregas', color: '#4CAF50' },
+              ].map(cat => (
+                <div
+                  key={cat.id}
+                  className={styles.filterItem}
+                  onClick={() => {
+                    setEnabledCategories(prev =>
+                      prev.includes(cat.id) ? prev.filter(c => c !== cat.id) : [...prev, cat.id]
+                    );
+                  }}
+                >
+                  <div className={styles.customCheck} style={{ borderColor: cat.color }}>
+                    <input type="checkbox" checked={enabledCategories.includes(cat.id)} readOnly />
+                    <AnimatePresence>
+                      {enabledCategories.includes(cat.id) && (
+                        <motion.div
+                          className={styles.checkInner}
+                          style={{ backgroundColor: cat.color }}
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          exit={{ scale: 0 }}
+                          transition={{ type: "spring", stiffness: 200, damping: 25 }}
+                        />
+                      )}
+                    </AnimatePresence>
+                  </div>
+                  <span>{cat.label}</span>
+                  <div className={styles.dot} style={{ backgroundColor: cat.color }}></div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
-
-        <div className={styles.sidebarFooter}>
-          <Settings size={18} />
-          <span>Configuración</span>
-        </div>
       </aside>
 
       <main className={styles.mainContent}>
@@ -295,44 +336,85 @@ export const CalendarView: React.FC = () => {
             {daysLabels.map(day => <span key={day}>{day}</span>)}
           </div>
 
-          <div className={styles.monthlyGrid}>
-            {renderCalendarGrid().map((item, idx) => {
-              const dateStr = new Date(item.year, item.month, item.day).toDateString();
-              const dayAppointments = appointments.filter(apt =>
-                new Date(apt.start_time).toDateString() === dateStr
-              );
-              const isTodayCell = isToday(item.day, item.month, item.year);
+          <div style={{ position: 'relative', overflow: 'hidden', flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <AnimatePresence mode="popLayout" custom={direction}>
+              <motion.div
+                key={currentDate.toISOString()}
+                custom={direction}
+                variants={{
+                  enter: (direction: number) => ({
+                    x: direction > 0 ? 50 : -50,
+                    opacity: 0
+                  }),
+                  center: {
+                    x: 0,
+                    opacity: 1
+                  },
+                  exit: (direction: number) => ({
+                    x: direction > 0 ? -50 : 50,
+                    opacity: 0
+                  })
+                }}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.6, ease: "easeInOut" }}
+                className={styles.monthlyGrid}
+              >
+                {renderCalendarGrid().map((item, idx) => {
+                  const dateStr = new Date(item.year, item.month, item.day).toDateString();
+                  const dayAppointments = appointments.filter(apt =>
+                    new Date(apt.start_time).toDateString() === dateStr
+                  );
+                  const isTodayCell = isToday(item.day, item.month, item.year);
 
-              return (
-                <div
-                  key={idx}
-                  className={`
-                                        ${item.isPadding ? styles.dayCellPadding : styles.dayCell} 
-                                        ${isTodayCell ? styles.dayCellToday : ''}
-                                    `}
-                >
-                  <span className={styles.dayCellNumber}>{item.day}</span>
-                  {isTodayCell && <span className={styles.todayIndicator}>HOY</span>}
-
-                  <div className={styles.cellAppointments}>
-                    {dayAppointments.map(apt => (
-                      <div
-                        key={apt.id}
-                        className={styles.desktopAptCard}
-                        style={{ backgroundColor: getCategoryBg(apt.type) }}
-                        onClick={(e) => handleAppointmentClick(e, apt)}
+                  return (
+                    <div
+                      key={idx}
+                      className={`
+                                            ${item.isPadding ? styles.dayCellPadding : styles.dayCell} 
+                                            ${isTodayCell ? styles.dayCellToday : ''}
+                                        `}
+                      style={(!item.isPadding && new Date(item.year, item.month, item.day).getDay() !== 0) ? { backgroundColor: 'rgba(178, 91, 82, 0.05)' } : {}}
+                    >
+                      <span
+                        className={styles.dayCellNumber}
+                        style={(!item.isPadding && new Date(item.year, item.month, item.day).getDay() !== 0) ? { color: 'var(--color-terracotta)', fontWeight: '800' } : {}}
                       >
-                        <span className={styles.desktopAptTime}>
-                          {new Date(apt.start_time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
-                          {` ${apt.type === 'fitting' ? 'Prueba' : apt.type === 'measurement' ? 'Medición' : apt.type === 'delivery' ? 'Entrega' : 'Cita'}`}
-                        </span>
-                        <span className={styles.desktopAptClient}>{apt.clients?.full_name}</span>
+                        {item.day}
+                      </span>
+                      {isTodayCell && <span className={styles.todayIndicator}>HOY</span>}
+
+                      <div className={styles.cellAppointments}>
+                        <AnimatePresence>
+                          {dayAppointments
+                            .filter(apt => enabledCategories.includes(apt.type.toLowerCase()))
+                            .map(apt => (
+                              <motion.div
+                                key={apt.id}
+                                className={styles.desktopAptCard}
+                                style={{ backgroundColor: getCategoryBg(apt.type) }}
+                                onClick={(e) => handleAppointmentClick(e, apt)}
+                                whileHover={{ scale: 1.05, zIndex: 10 }}
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ scale: 0.8, opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                              >
+                                <span className={styles.desktopAptTime}>
+                                  {new Date(apt.start_time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                                  {` ${apt.type === 'fitting' ? 'Prueba' : apt.type === 'measurement' ? 'Medición' : apt.type === 'delivery' ? 'Entrega' : 'Cita'}`}
+                                </span>
+                                <span className={styles.desktopAptClient}>{apt.clients?.full_name}</span>
+                              </motion.div>
+                            ))}
+                        </AnimatePresence>
                       </div>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
+                    </div>
+                  );
+                })}
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
       </main>
