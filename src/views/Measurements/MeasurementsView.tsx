@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Save, User, FileText, Camera, Check, Scissors } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Save, User, FileText, Camera, Check, Scissors, ArrowLeft, Loader2 } from 'lucide-react';
 import { InputMeasure } from "@/components/common/InputMeasure/InputMeasure.tsx";
 import { Client } from "@/types.ts";
+import { useAuth } from '../../../hooks/useAuth';
+import { MeasurementService } from '../../../services/measurement.service';
 import styles from './MeasurementsView.module.css';
 
 // Animation Variants
@@ -31,7 +34,13 @@ const sectionVariants = {
 };
 
 export const MeasurementsView: React.FC = () => {
-  const [activeClient] = useState<Partial<Client>>({ name: "Maria Gonzalez", id: "1" });
+  const { clientId } = useParams<{ clientId: string }>();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const [activeClient, setActiveClient] = useState<Partial<Client>>({ name: "Cargando...", id: clientId });
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   // State for form fields
   const [measures, setMeasures] = useState({
@@ -50,8 +59,36 @@ export const MeasurementsView: React.FC = () => {
     sisa: ''
   });
 
+  const [notes, setNotes] = useState('');
+
   const handleChange = (key: string, val: string) => {
     setMeasures(prev => ({ ...prev, [key]: val }));
+  };
+
+  const handleSave = async () => {
+    if (!user || !clientId) return;
+    setIsSaving(true);
+
+    try {
+      const { error } = await MeasurementService.create({
+        user_id: user.id,
+        client_id: clientId,
+        values: measures,
+        notes: notes,
+      });
+
+      if (error) throw error;
+
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+
+      // Optional: navigate back or show success message
+    } catch (error) {
+      console.error('Error saving measurements:', error);
+      alert('Error al guardar las medidas');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -65,29 +102,37 @@ export const MeasurementsView: React.FC = () => {
       <motion.header className="view-header" variants={sectionVariants}>
         <div className="view-title-section">
           <div className="view-breadcrumb">
+            <button
+              onClick={() => navigate(-1)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', color: 'inherit', padding: 0 }}
+            >
+              <ArrowLeft size={18} />
+              <span>Volver</span>
+            </button>
+            <span style={{ opacity: 0.5 }}>/</span>
             <RulerIcon />
             <span>Nueva Ficha</span>
           </div>
           <h1 className="view-title">Ficha de Medidas</h1>
-          <div className={styles.metaInfo}>
-            <div className={styles.statusDot}></div>
-            <span>Cliente: <strong className={styles.clientName}>{activeClient.name}</strong></span>
-            <span className={styles.separator}>|</span>
-            <span>Proyecto: Vestido de Gala</span>
-          </div>
         </div>
 
         <div className={styles.headerActions}>
-          <button className={styles.cancelButton}>
+          <button className={styles.cancelButton} onClick={() => navigate(-1)} disabled={isSaving}>
             Cancelar
           </button>
           <motion.button
             className={styles.saveButton}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={{ scale: isSaving ? 1 : 1.02 }}
+            whileTap={{ scale: isSaving ? 1 : 0.98 }}
+            onClick={handleSave}
+            disabled={isSaving}
+            style={{
+              backgroundColor: saveSuccess ? '#10B981' : 'var(--color-terracotta)',
+              cursor: isSaving ? 'not-allowed' : 'pointer'
+            }}
           >
-            <Save size={18} />
-            Guardar Medidas
+            {isSaving ? <Loader2 size={18} className="animate-spin" /> : saveSuccess ? <Check size={18} /> : <Save size={18} />}
+            {isSaving ? 'Guardando...' : saveSuccess ? '¡Guardado!' : 'Guardar Medidas'}
           </motion.button>
         </div>
       </motion.header>
@@ -189,6 +234,8 @@ export const MeasurementsView: React.FC = () => {
             <textarea
               className={styles.notesTextarea}
               placeholder="Notas sobre postura, tipo de tela, preferencias del cliente..."
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
             ></textarea>
           </motion.section>
 

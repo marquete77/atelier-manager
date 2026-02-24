@@ -28,7 +28,7 @@ function App() {
               <Route path="/" element={<DashboardView />} />
               <Route path="/clients" element={<ClientsView />} />
               <Route path="/clients/:clientId" element={<ClientProfileView />} />
-              <Route path="/measurements" element={<MeasurementsView />} />
+              <Route path="/clients/:clientId/measurements" element={<MeasurementsView />} />
               <Route path="/projects" element={<NewProjectView />} />
               <Route path="/calendar" element={<CalendarView />} />
               <Route path="/settings" element={<SettingsView />} />

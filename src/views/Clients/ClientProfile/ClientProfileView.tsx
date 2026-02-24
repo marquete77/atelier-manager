@@ -352,7 +352,7 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
                             <div className={styles.sectionActions}>
                                 <motion.button
                                     className={styles.refreshButton}
-                                    onClick={() => navigate('/measurements')}
+                                    onClick={() => navigate(`/clients/${clientId}/measurements`)}
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
                                 >
