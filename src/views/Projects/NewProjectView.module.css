@@ -1,11 +1,79 @@
 .newProjectContainer {
     width: 100%;
     margin: 0;
-    padding: 2rem max(1.5rem, calc((100% - 1024px) / 2));
+    padding: 2rem max(1.5rem, calc((100% - 1300px) / 2));
     animation: fadeIn 0.4s ease-out forwards;
     background-color: var(--color-linen);
     height: 100%;
     overflow-y: auto;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.viewHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 2.5rem;
+    gap: 2rem;
+}
+
+@media (max-width: 768px) {
+    .viewHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+    }
+}
+
+.viewTitleSection {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.viewBreadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-charcoal-light);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.viewBreadcrumb button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: inherit;
+    padding: 0;
+    font: inherit;
+    transition: color 0.2s;
+}
+
+.viewBreadcrumb button:hover {
+    color: var(--color-terracotta);
+}
+
+.viewTitle {
+    font-family: var(--font-serif);
+    font-size: 2.5rem;
+    color: var(--color-charcoal);
+    margin: 0;
+    line-height: 1.1;
 }
 
 /* Header Section */
@@ -327,4 +395,109 @@
     border-color: var(--color-terracotta);
     background: white;
     color: var(--color-terracotta);
+}
+
+.previewGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.previewItem {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1.5px solid #E2E8F0;
+    background: white;
+}
+
+.previewImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.removeImage {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.removeImage:hover {
+    background: rgba(239, 68, 68, 0.8);
+}
+
+.animateSpin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.textTerracotta {
+    color: var(--color-terracotta);
+}
+
+.relative {
+    position: relative;
+}
+
+.hidden {
+    display: none;
+}
+
+.textXs {
+    font-size: 0.75rem;
+}
+
+.opacity60 {
+    opacity: 0.6;
+}
+
+.disclaimer {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--color-charcoal-light);
+    margin-top: 1rem;
+}
+
+.currencySymbol {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-charcoal-light);
+    pointer-events: none;
+}
+
+.inputWithIcon {
+    padding-left: 2rem !important;
+}
+
+.mr1 {
+    margin-right: 0.25rem;
+}
+
+.textXl {
+    font-size: 1.25rem;
 }

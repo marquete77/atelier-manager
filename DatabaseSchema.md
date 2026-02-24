@@ -42,6 +42,7 @@ Representa un trabajo específico, ya sea una confección a medida o un arreglo.
 | `total_cost` | `numeric` | Costo total del proyecto. |
 | `deposit` | `numeric` | Monto del anticipo/seña abonado. |
 | `is_paid` | `boolean` | Indica si el proyecto está totalmente pagado. Default: `false`. |
+| `images` | `text[]` | Array de URLs de imágenes de referencia. |
 | `created_at` | `timestamptz` | Fecha de creación. |
 
 ### 3. `measurements` (Medidas)

@@ -255,7 +255,6 @@ export type Database = {
                 Row: {
                     client_id: string
                     created_at: string | null
-                    deadline: string | null
                     deposit: number | null
                     description: string | null
                     id: string
@@ -264,12 +263,12 @@ export type Database = {
                     title: string
                     total_cost: number | null
                     type: string | null
+                    images: string[] | null
                     user_id: string
                 }
                 Insert: {
                     client_id: string
                     created_at?: string | null
-                    deadline?: string | null
                     deposit?: number | null
                     description?: string | null
                     id?: string
@@ -278,20 +277,21 @@ export type Database = {
                     title: string
                     total_cost?: number | null
                     type?: string | null
+                    images?: string[] | null
                     user_id: string
                 }
                 Update: {
                     client_id?: string
                     created_at?: string | null
-                    deadline?: string | null
                     deposit?: number | null
                     description?: string | null
                     id?: string
                     is_paid?: boolean | null
                     status?: string | null
-                    title: string
+                    title?: string
                     total_cost?: number | null
                     type?: string | null
+                    images?: string[] | null
                     user_id?: string
                 }
                 Relationships: [

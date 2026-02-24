@@ -48,8 +48,16 @@ const statusLabel: Record<string, string> = {
     delivered: 'Entregado',
 };
 
-const formatDate = (d: string | null) =>
-    d ? new Date(d).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+const formatDate = (d: string | null) => {
+    if (!d) return '—';
+    // Si es solo fecha YYYY-MM-DD, evitamos desfase de zona horaria
+    if (d.includes('-') && d.length === 10) {
+        const [year, month, day] = d.split('-').map(Number);
+        // Creamos la fecha localmente (mes es 0-indexed)
+        return new Date(year, month - 1, day).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+    return new Date(d).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+};
 
 export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeView }) => {
     const { clientId } = useParams<{ clientId: string }>();
@@ -82,15 +90,18 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
     const [isSavingAppointment, setIsSavingAppointment] = useState(false);
     const [occupiedSlots, setOccupiedSlots] = useState<string[]>([]);
     const [isLoadingSlots, setIsLoadingSlots] = useState(false);
+    const [activeMeasureTab, setActiveMeasureTab] = useState<'upper' | 'lower'>('upper');
 
     const loadData = async () => {
         if (!clientId) return;
         setLoading(true);
         const [{ data: c }, { data: projs }, { data: meas }] = await Promise.all([
             supabase.from('clients').select('*').eq('id', clientId).single(),
-            supabase.from('projects').select('*').eq('client_id', clientId).order('created_at', { ascending: false }),
+            supabase.from('projects').select('*, appointments(*)').eq('client_id', clientId).order('created_at', { ascending: false }),
             supabase.from('measurements').select('*').eq('client_id', clientId).order('created_at', { ascending: false }).limit(1),
         ]);
+
+        console.log('📋 Proyectos cargados en ficha de cliente (con citas):', projs);
 
         if (c) {
             setClient({
@@ -103,14 +114,17 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
                 balance: 0,
                 notes: c.notes ?? '',
                 measures: (meas?.[0]?.values as Record<string, number>) ?? {},
-                projects: (projs ?? []).map((p: any) => ({
-                    id: p.id,
-                    title: p.title,
-                    status: statusLabel[p.status] ?? p.status ?? '—',
-                    date: p.deadline ? `Entrega: ${formatDate(p.deadline)}` : formatDate(p.created_at),
-                    price: p.total_cost ?? 0,
-                    type: p.type ?? 'confection',
-                })),
+                projects: (projs ?? []).map((p: any) => {
+                    const deliveryApt = p.appointments?.find((a: any) => a.type === 'delivery');
+                    return {
+                        id: p.id,
+                        title: p.title,
+                        status: statusLabel[p.status] ?? p.status ?? '—',
+                        date: deliveryApt ? `Entrega: ${formatDate(deliveryApt.start_time)}` : formatDate(p.created_at),
+                        price: p.total_cost ?? 0,
+                        type: p.type ?? 'confection',
+                    };
+                }),
             });
         }
         setLoading(false);
@@ -243,7 +257,7 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
                     </motion.button>
                     <motion.button
                         className={`${styles.actionButton} ${styles.primaryButton}`}
-                        onClick={() => navigate('/projects')}
+                        onClick={() => navigate(`/clients/${clientId}/projects/new`)}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                     >
@@ -362,38 +376,82 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
                             </div>
                         </div>
 
-                        <div className={styles.measuresGrid}>
-                            <div className={styles.measureItem}>
-                                <p className={styles.measureLabel}>Busto</p>
-                                <p className={styles.measureValue}>{client.measures.busto} <span className={styles.measureUnit}>cm</span></p>
+                        <div className={styles.measuresContent}>
+                            <div className={styles.tabsContainer}>
+                                <button
+                                    className={`${styles.tabButton} ${activeMeasureTab === 'upper' ? styles.tabButtonActive : ''}`}
+                                    onClick={() => setActiveMeasureTab('upper')}
+                                >
+                                    Parte Superior
+                                </button>
+                                <button
+                                    className={`${styles.tabButton} ${activeMeasureTab === 'lower' ? styles.tabButtonActive : ''}`}
+                                    onClick={() => setActiveMeasureTab('lower')}
+                                >
+                                    Parte Inferior
+                                </button>
                             </div>
-                            <div className={styles.measureItem}>
-                                <p className={styles.measureLabel}>Cintura</p>
-                                <p className={styles.measureValue}>{client.measures.cintura} <span className={styles.measureUnit}>cm</span></p>
-                            </div>
-                            <div className={styles.measureItem}>
-                                <p className={styles.measureLabel}>Cadera</p>
-                                <p className={styles.measureValue}>{client.measures.cadera} <span className={styles.measureUnit}>cm</span></p>
-                            </div>
-                            <div className={styles.measureItem}>
-                                <p className={styles.measureLabel}>Talle Del.</p>
-                                <p className={styles.measureValue}>{client.measures.talleDelantero} <span className={styles.measureUnit}>cm</span></p>
-                            </div>
-                            <div className={styles.measureItem}>
-                                <p className={styles.measureLabel}>Espalda</p>
-                                <p className={styles.measureValue}>{client.measures.espalda} <span className={styles.measureUnit}>cm</span></p>
-                            </div>
-                            <div className={styles.measureItem}>
-                                <p className={styles.measureLabel}>Largo Total</p>
-                                <p className={styles.measureValue}>{client.measures.largoTotal} <span className={styles.measureUnit}>cm</span></p>
-                            </div>
-                            <div className={styles.measureItem}>
-                                <p className={styles.measureLabel}>Sisa</p>
-                                <p className={styles.measureValue}>{client.measures.sisa} <span className={styles.measureUnit}>cm</span></p>
-                            </div>
-                            <div className={styles.measureItem}>
-                                <p className={styles.measureLabel}>Brazo</p>
-                                <p className={styles.measureValue}>{client.measures.brazo} <span className={styles.measureUnit}>cm</span></p>
+
+                            <div className={styles.measuresGrid}>
+                                {activeMeasureTab === 'upper' ? (
+                                    <>
+                                        <div className={styles.measureItem}>
+                                            <p className={styles.measureLabel}>Busto</p>
+                                            <p className={styles.measureValue}>{client.measures.busto || 0} <span className={styles.measureUnit}>cm</span></p>
+                                        </div>
+                                        <div className={styles.measureItem}>
+                                            <p className={styles.measureLabel}>Espalda</p>
+                                            <p className={styles.measureValue}>{client.measures.espalda || 0} <span className={styles.measureUnit}>cm</span></p>
+                                        </div>
+                                        <div className={styles.measureItem}>
+                                            <p className={styles.measureLabel}>Talle Del.</p>
+                                            <p className={styles.measureValue}>{client.measures.talleDelantero || 0} <span className={styles.measureUnit}>cm</span></p>
+                                        </div>
+                                        <div className={styles.measureItem}>
+                                            <p className={styles.measureLabel}>Talle Esp.</p>
+                                            <p className={styles.measureValue}>{client.measures.talleEspalda || 0} <span className={styles.measureUnit}>cm</span></p>
+                                        </div>
+                                        <div className={styles.measureItem}>
+                                            <p className={styles.measureLabel}>Alt. Busto</p>
+                                            <p className={styles.measureValue}>{client.measures.alturaBusto || 0} <span className={styles.measureUnit}>cm</span></p>
+                                        </div>
+                                        <div className={styles.measureItem}>
+                                            <p className={styles.measureLabel}>Sisa</p>
+                                            <p className={styles.measureValue}>{client.measures.sisa || 0} <span className={styles.measureUnit}>cm</span></p>
+                                        </div>
+                                        <div className={styles.measureItem}>
+                                            <p className={styles.measureLabel}>Largo Manga</p>
+                                            <p className={styles.measureValue}>{client.measures.largoManga || 0} <span className={styles.measureUnit}>cm</span></p>
+                                        </div>
+                                        <div className={styles.measureItem}>
+                                            <p className={styles.measureLabel}>Cont. Brazo</p>
+                                            <p className={styles.measureValue}>{client.measures.anchoBrazo || 0} <span className={styles.measureUnit}>cm</span></p>
+                                        </div>
+                                        <div className={styles.measureItem}>
+                                            <p className={styles.measureLabel}>Puño</p>
+                                            <p className={styles.measureValue}>{client.measures.puno || 0} <span className={styles.measureUnit}>cm</span></p>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className={styles.measureItem}>
+                                            <p className={styles.measureLabel}>Cintura</p>
+                                            <p className={styles.measureValue}>{client.measures.cintura || 0} <span className={styles.measureUnit}>cm</span></p>
+                                        </div>
+                                        <div className={styles.measureItem}>
+                                            <p className={styles.measureLabel}>Cadera</p>
+                                            <p className={styles.measureValue}>{client.measures.cadera || 0} <span className={styles.measureUnit}>cm</span></p>
+                                        </div>
+                                        <div className={styles.measureItem}>
+                                            <p className={styles.measureLabel}>Largo Tiro</p>
+                                            <p className={styles.measureValue}>{client.measures.largoTiro || 0} <span className={styles.measureUnit}>cm</span></p>
+                                        </div>
+                                        <div className={styles.measureItem}>
+                                            <p className={styles.measureLabel}>Largo Total</p>
+                                            <p className={styles.measureValue}>{client.measures.largoTotal || 0} <span className={styles.measureUnit}>cm</span></p>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </motion.section>

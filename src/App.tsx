@@ -29,7 +29,7 @@ function App() {
               <Route path="/clients" element={<ClientsView />} />
               <Route path="/clients/:clientId" element={<ClientProfileView />} />
               <Route path="/clients/:clientId/measurements" element={<MeasurementsView />} />
-              <Route path="/projects" element={<NewProjectView />} />
+              <Route path="/clients/:clientId/projects/new" element={<NewProjectView />} />
               <Route path="/calendar" element={<CalendarView />} />
               <Route path="/settings" element={<SettingsView />} />
               <Route path="/dashboard" element={<Navigate to="/" replace />} />

@@ -4,8 +4,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Save, User, FileText, Camera, Check, Scissors, ArrowLeft, Loader2 } from 'lucide-react';
 import { InputMeasure } from "@/components/common/InputMeasure/InputMeasure.tsx";
 import { Client } from "@/types.ts";
-import { useAuth } from '../../../hooks/useAuth';
-import { MeasurementService } from '../../../services/measurement.service';
+import { useAuth } from '../../hooks/useAuth';
+import { MeasurementService } from '../../services/measurement.service';
+import { ClientService } from '../../services/client.service';
 import styles from './MeasurementsView.module.css';
 
 // Animation Variants
@@ -61,6 +62,28 @@ export const MeasurementsView: React.FC = () => {
 
   const [notes, setNotes] = useState('');
 
+  useEffect(() => {
+    const loadClientAndMeasures = async () => {
+      if (!clientId) return;
+
+      // Load client info
+      const { data: clientData } = await ClientService.getById(clientId);
+      if (clientData) {
+        setActiveClient({ name: clientData.full_name, id: clientData.id });
+      }
+
+      // Load latest measurements to pre-fill form
+      const { data: measureData } = await MeasurementService.getLatestByClientId(clientId);
+      if (measureData && typeof measureData.values === 'object') {
+        const vals = measureData.values as any;
+        setMeasures(prev => ({ ...prev, ...vals }));
+        setNotes(measureData.notes || '');
+      }
+    };
+
+    loadClientAndMeasures();
+  }, [clientId]);
+
   const handleChange = (key: string, val: string) => {
     setMeasures(prev => ({ ...prev, [key]: val }));
   };
@@ -114,6 +137,10 @@ export const MeasurementsView: React.FC = () => {
             <span>Nueva Ficha</span>
           </div>
           <h1 className="view-title">Ficha de Medidas</h1>
+          <div className={styles.metaInfo}>
+            <div className={styles.statusDot}></div>
+            <span>Cliente: <strong className={styles.clientName}>{activeClient.name}</strong></span>
+          </div>
         </div>
 
         <div className={styles.headerActions}>

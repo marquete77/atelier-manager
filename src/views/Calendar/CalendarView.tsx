@@ -47,12 +47,22 @@ export const CalendarView: React.FC = () => {
 
   const daysLabels = ['LUNES', 'MARTES', 'MIÉRCOLES', 'JUEVES', 'VIERNES', 'SÁBADO', 'DOMINGO'];
   const miniDaysLabels = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
-
   useEffect(() => {
     if (user) {
       fetchAppointments();
     }
   }, [user, currentDate]);
+
+  useEffect(() => {
+    // Refresh when tab becomes visible again
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && user) {
+        fetchAppointments();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [user]);
 
   const fetchAppointments = async () => {
     if (!user) return;
@@ -69,6 +79,8 @@ export const CalendarView: React.FC = () => {
         .eq('user_id', user.id)
         .gte('start_time', firstDay)
         .lte('start_time', lastDay);
+
+      console.log('📌 Citas recibidas del backend:', data);
 
       if (error) throw error;
       setAppointments(data || []);

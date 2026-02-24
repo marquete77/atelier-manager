@@ -315,6 +315,35 @@
     text-align: center;
 }
 
+.monthLabelWrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem;
+    transition: background 0.2s;
+}
+
+.monthLabelWrapper:hover {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.refreshSpinner {
+    color: var(--color-terracotta);
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .todayBtn {
     background: none;
     border: none;

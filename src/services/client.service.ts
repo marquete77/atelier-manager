@@ -14,5 +14,9 @@ export const ClientService = {
 
   async update(id: string, data: Partial<ClientInsert>) {
     return await supabase.from('clients').update(data).eq('id', id).select().single()
+  },
+
+  async getById(id: string) {
+    return await supabase.from('clients').select('*').eq('id', id).single()
   }
 }
