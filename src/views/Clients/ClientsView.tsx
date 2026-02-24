@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Plus, Phone, Mail, ChevronRight, MoreVertical, Loader2 } from 'lucide-react';
 import { supabase } from "@/config/supabase";
@@ -51,6 +52,7 @@ const cardVariants = {
 
 export const ClientsView: React.FC<ClientsViewProps> = ({ onChangeView }) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -195,7 +197,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({ onChangeView }) => {
                     <div className={styles.cardFooter}>
                       <motion.button
                         className={styles.viewProfileLink}
-                        onClick={() => onChangeView?.('client-profile')}
+                        onClick={() => navigate(`/clients/${client.id}`)}
                         whileHover={{ x: 3 }}
                       >
                         Ver Perfil <ChevronRight size={16} />

@@ -176,3 +176,18 @@
         width: auto;
     }
 }
+
+.btnSubmit:disabled,
+.btnCancel:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.errorMessage {
+    font-size: 0.875rem;
+    color: #e53e3e;
+    background-color: rgba(229, 62, 62, 0.08);
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    margin: 0;
+}

@@ -62,7 +62,8 @@ export const Nav: React.FC<NavProps> = ({ currentView, onChangeView, isCollapsed
                     ))}
                 </nav>
 
-                <div className={styles.separationContainer}>
+                {/* no borrar este codigo comentado */}
+                {/* <div className={styles.separationContainer}>
                     <button
                         onClick={() => onChangeView('settings')}
                         className={`${styles.navButton} ${currentView === 'settings' ? styles.navButtonActive : ''}`}
@@ -71,7 +72,7 @@ export const Nav: React.FC<NavProps> = ({ currentView, onChangeView, isCollapsed
                         <Settings size={20} strokeWidth={currentView === 'settings' ? 2.5 : 2} />
                         <span className={styles.navLabel}>Configuración</span>
                     </button>
-                </div>
+                </div> */}
 
                 <div className={styles.userSection}>
                     <div className={styles.userDivider}>

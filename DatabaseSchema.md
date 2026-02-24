@@ -20,6 +20,8 @@ Almacena la información de los clientes del taller.
 | `full_name` | `text` | Nombre completo del cliente. |
 | `phone` | `text` | Teléfono de contacto. |
 | `email` | `text` | Email del cliente (opcional). |
+| `address` | `text` | Dirección física. |
+| `address_link` | `text` | Enlace de Google Maps / WhatsApp. |
 | `notes` | `text` | Notas generales sobre el cliente. |
 | `created_at` | `timestamptz` | Fecha de creación. |
 | `updated_at` | `timestamptz` | Fecha de última actualización. |

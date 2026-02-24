@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     MessageCircle, Phone, Calendar, Plus, Mail, MapPin,
-    Wallet, Ruler, RefreshCw, History, Check, Scissors, Users
+    Wallet, Ruler, RefreshCw, History, Check, Scissors, Users, Loader2, X, Clock, Edit, ExternalLink
 } from 'lucide-react';
 import { ViewState } from '../../../../types';
+import { supabase } from '@/config/supabase';
+import { EditClientModal } from '../../../components/forms/EditClientModal/EditClientModal';
+import { AppointmentService } from '../../../services/appointment.service';
+import { useAuth } from '../../../hooks/useAuth';
 import styles from './ClientProfileView.module.css';
 
 interface ClientProfileViewProps {
@@ -36,52 +41,134 @@ const itemVariants = {
     }
 };
 
+const statusLabel: Record<string, string> = {
+    pending: 'Pendiente',
+    in_progress: 'En Proceso',
+    completed: 'Completado',
+    delivered: 'Entregado',
+};
+
+const formatDate = (d: string | null) =>
+    d ? new Date(d).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+
 export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeView }) => {
-    // Mock data based on the provided HTML reference
-    const client = {
-        name: "Maria Gonzalez",
-        avatarUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuChHNWqN-6cXjarD2WhdeFGgMNcvyq64VAysRk2FrUIaMDqNwPzdEKiIrDbaQK8QeGYOSkchZ4fjsXEBZLm9tOk8eS6_wH16vRiBJWZE2apdpdfhKZGIWRcbSxG7U-3S4vIZvO1zz2x6yQhwtrGvgRQhxuvebous33ZNR0cyF-YExFpdPPwB3Mn8H6Ez40THudNU0f11k5DI1-cB5ZhoaMDcsZ5HCSKG6zl1zu-Us2y6c6UALtceNZQpmap5E4qQld6p_pAzV4c9QI",
-        email: "m.gonzalez@email.com",
-        address: "Calle de la Seda 12, apto 4B",
-        balance: 25,
-        notes: "Prefiere telas naturales como el lino y la seda. Tiene una postura ligeramente cargada hacia adelante en el hombro derecho.",
-        measures: {
-            busto: 92,
-            cintura: 68,
-            cadera: 98,
-            talleDelantero: 44,
-            espalda: 38,
-            largoTotal: 105,
-            sisa: 42,
-            brazo: 30
-        },
-        projects: [
-            {
-                id: 1,
-                title: "Vestido seda azul",
-                status: "Entregado",
-                date: "Terminado el 15 de Oct, 2023",
-                price: 180.00,
-                type: "confection"
-            },
-            {
-                id: 2,
-                title: "Blusa de Encaje",
-                status: "En Proceso",
-                date: "Segunda prueba: 20 de Nov",
-                price: 95.00,
-                type: "confection"
-            },
-            {
-                id: 3,
-                title: "Falda sastre gris",
-                status: "Entregado",
-                date: "Entregado el 5 de Sept, 2023",
-                price: 120.00,
-                type: "confection"
-            }
-        ]
+    const { clientId } = useParams<{ clientId: string }>();
+    const navigate = useNavigate();
+    const { user } = useAuth();
+
+    const [loading, setLoading] = useState(true);
+    const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [client, setClient] = useState({
+        name: '',
+        avatarUrl: '',
+        email: '',
+        phone: '',
+        address: '',
+        addressLink: '',
+        balance: 0,
+        notes: '',
+        measures: {} as Record<string, number>,
+        projects: [] as { id: string; title: string; status: string; date: string; price: number; type: string }[],
+    });
+
+    const [appointmentForm, setAppointmentForm] = useState({
+        type: 'fitting',
+        date: '',
+        time: '',
+        notes: ''
+    });
+
+    const [isSavingAppointment, setIsSavingAppointment] = useState(false);
+    const [occupiedSlots, setOccupiedSlots] = useState<string[]>([]);
+    const [isLoadingSlots, setIsLoadingSlots] = useState(false);
+
+    const loadData = async () => {
+        if (!clientId) return;
+        setLoading(true);
+        const [{ data: c }, { data: projs }, { data: meas }] = await Promise.all([
+            supabase.from('clients').select('*').eq('id', clientId).single(),
+            supabase.from('projects').select('*').eq('client_id', clientId).order('created_at', { ascending: false }),
+            supabase.from('measurements').select('*').eq('client_id', clientId).order('created_at', { ascending: false }).limit(1),
+        ]);
+
+        if (c) {
+            setClient({
+                name: c.full_name,
+                avatarUrl: '',
+                email: c.email ?? '',
+                phone: c.phone ?? '',
+                address: c.address ?? '',
+                addressLink: c.address_link ?? '',
+                balance: 0,
+                notes: c.notes ?? '',
+                measures: (meas?.[0]?.values as Record<string, number>) ?? {},
+                projects: (projs ?? []).map((p: any) => ({
+                    id: p.id,
+                    title: p.title,
+                    status: statusLabel[p.status] ?? p.status ?? '—',
+                    date: p.deadline ? `Entrega: ${formatDate(p.deadline)}` : formatDate(p.created_at),
+                    price: p.total_cost ?? 0,
+                    type: p.type ?? 'confection',
+                })),
+            });
+        }
+        setLoading(false);
     };
+
+    useEffect(() => {
+        loadData();
+    }, [clientId]);
+
+    const hasMeasures = Object.keys(client.measures).length > 0;
+
+    const handleSaveAppointment = async () => {
+        if (!user || !clientId) return;
+        setIsSavingAppointment(true);
+
+        const startDateTime = new Date(`${appointmentForm.date}T${appointmentForm.time}`);
+        const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000); // 1 hour duration default
+
+        const { error } = await AppointmentService.create({
+            user_id: user.id,
+            client_id: clientId,
+            type: appointmentForm.type,
+            start_time: startDateTime.toISOString(),
+            end_time: endDateTime.toISOString(),
+            title: `${appointmentForm.type === 'fitting' ? 'Prueba' : appointmentForm.type === 'measurement' ? 'Medición' : appointmentForm.type === 'delivery' ? 'Entrega' : 'Cita'}: ${client.name}`,
+            notes: appointmentForm.notes,
+            status: 'scheduled'
+        });
+
+        setIsSavingAppointment(false);
+
+        if (error) {
+            alert('Error al guardar la cita. Por favor, intenta de nuevo.');
+            return;
+        }
+
+        setIsAppointmentModalOpen(false);
+        setAppointmentForm({ type: 'fitting', date: '', time: '', notes: '' });
+        setOccupiedSlots([]);
+    };
+
+    useEffect(() => {
+        const fetchOccupiedSlots = async () => {
+            if (!appointmentForm.date) return;
+            setIsLoadingSlots(true);
+            const { data, error } = await AppointmentService.getByDate(appointmentForm.date);
+            if (!error && data) {
+                // Extract HH:mm from ISO strings
+                const slots = data.map(apt => {
+                    const date = new Date(apt.start_time);
+                    return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+                });
+                setOccupiedSlots(slots);
+            }
+            setIsLoadingSlots(false);
+        };
+        fetchOccupiedSlots();
+    }, [appointmentForm.date]);
 
     const StatusIcon = ({ status }: { status: string }) => {
         if (status === 'Entregado') return <Check size={14} />;
@@ -114,12 +201,31 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
                             </div>
                             <h1 className="view-title">{client.name}</h1>
                             <div className={styles.contactActions}>
-                                <a href="#" className={`${styles.contactLink} ${styles.whatsappLink}`}>
-                                    <MessageCircle size={18} /> WhatsApp
-                                </a>
-                                <a href="#" className={`${styles.contactLink} ${styles.callLink}`}>
-                                    <Phone size={18} /> Llamar
-                                </a>
+                                {client.phone && (
+                                    <>
+                                        <a
+                                            href={`https://wa.me/${client.phone.replace(/\D/g, '')}`}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className={`${styles.contactLink} ${styles.whatsappLink}`}
+                                        >
+                                            <MessageCircle size={18} /> WhatsApp
+                                        </a>
+                                        <a
+                                            href={`tel:+${client.phone.replace(/\D/g, '')}`}
+                                            className={`${styles.contactLink} ${styles.callLink}`}
+                                        >
+                                            <Phone size={18} /> Llamar
+                                        </a>
+                                    </>
+                                )}
+                                <button
+                                    className={`${styles.contactLink}`}
+                                    style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                                    onClick={() => setIsEditModalOpen(true)}
+                                >
+                                    <Edit size={18} /> Editar
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -128,6 +234,7 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
                 <div className={styles.headerButtons}>
                     <motion.button
                         className={`${styles.actionButton} ${styles.secondaryButton}`}
+                        onClick={() => setIsAppointmentModalOpen(true)}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                     >
@@ -136,7 +243,7 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
                     </motion.button>
                     <motion.button
                         className={`${styles.actionButton} ${styles.primaryButton}`}
-                        onClick={() => onChangeView?.('new-project')}
+                        onClick={() => navigate('/projects')}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                     >
@@ -165,13 +272,39 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
                                     <p className={styles.contactValue}>{client.email}</p>
                                 </div>
                             </div>
+                            {client.phone && (
+                                <div className={styles.contactItem}>
+                                    <Phone size={20} className={styles.contactIcon} />
+                                    <div>
+                                        <p className={styles.contactLabel}>Teléfono</p>
+                                        <p className={styles.contactValue}>{client.phone}</p>
+                                    </div>
+                                </div>
+                            )}
                             <div className={styles.contactItem}>
                                 <MapPin size={20} className={styles.contactIcon} />
                                 <div>
                                     <p className={styles.contactLabel}>Dirección</p>
-                                    <p className={styles.contactValue}>{client.address}</p>
+                                    <p className={styles.contactValue}>{client.address || "No especificada"}</p>
                                 </div>
                             </div>
+                            {client.addressLink && (
+                                <div className={styles.contactItem}>
+                                    <ExternalLink size={20} className={styles.contactIcon} />
+                                    <div>
+                                        <p className={styles.contactLabel}>Ubicación</p>
+                                        <a
+                                            href={client.addressLink}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className={styles.contactValue}
+                                            style={{ color: 'var(--color-terracotta)', textDecoration: 'none', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}
+                                        >
+                                            Abrir en Google Maps
+                                        </a>
+                                    </div>
+                                </div>
+                            )}
 
                             <div className={styles.balanceCard}>
                                 <div className={styles.balanceLabel}>
@@ -217,14 +350,14 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
                                 <h2 className={styles.sectionMainTitle}>Medidas Base</h2>
                             </div>
                             <div className={styles.sectionActions}>
-                                <span className={styles.lastUpdate}>Última actualización: hace 3 meses</span>
                                 <motion.button
                                     className={styles.refreshButton}
+                                    onClick={() => navigate('/measurements')}
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
                                 >
-                                    <RefreshCw size={18} />
-                                    Actualizar Medidas
+                                    {hasMeasures ? <RefreshCw size={18} /> : <Plus size={18} />}
+                                    {hasMeasures ? 'Actualizar Medidas' : 'Agregar Medidas'}
                                 </motion.button>
                             </div>
                         </div>
@@ -305,6 +438,151 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
 
                 </div>
             </div>
+
+            {/* ── Modal: Nueva Cita ── */}
+            <AnimatePresence>
+                {isAppointmentModalOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        style={{
+                            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            zIndex: 1000, padding: '1rem',
+                        }}
+                        onClick={() => setIsAppointmentModalOpen(false)}
+                    >
+                        <motion.div
+                            initial={{ opacity: 0, y: 20, scale: 0.97 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 20, scale: 0.97 }}
+                            transition={{ duration: 0.25, ease: 'easeOut' }}
+                            style={{
+                                background: 'white', borderRadius: '1.25rem', padding: '2rem',
+                                width: '100%', maxWidth: '460px', boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
+                                position: 'relative',
+                            }}
+                            onClick={e => e.stopPropagation()}
+                        >
+                            {/* Header */}
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                    <div style={{ background: 'rgba(178,91,82,0.1)', borderRadius: '50%', width: '2.5rem', height: '2.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-terracotta)' }}>
+                                        <Calendar size={20} />
+                                    </div>
+                                    <div>
+                                        <h2 style={{ margin: 0, fontFamily: 'var(--font-serif)', fontSize: '1.25rem', color: 'var(--color-charcoal)' }}>Nueva Cita</h2>
+                                        <p style={{ margin: 0, fontSize: '0.8rem', color: '#94A3B8' }}>{client.name}</p>
+                                    </div>
+                                </div>
+                                <button onClick={() => setIsAppointmentModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', padding: '0.25rem' }}>
+                                    <X size={20} />
+                                </button>
+                            </div>
+
+                            {/* Form */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#64748B', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Tipo de cita</label>
+                                    <select
+                                        value={appointmentForm.type}
+                                        onChange={(e) => setAppointmentForm({ ...appointmentForm, type: e.target.value })}
+                                        style={{ width: '100%', padding: '0.625rem 0.875rem', border: '1px solid #E2E8F0', borderRadius: '0.75rem', fontSize: '0.875rem', color: 'var(--color-charcoal)', background: 'white', outline: 'none' }}
+                                    >
+                                        <option value="fitting">Prueba de vestido</option>
+                                        <option value="measurement">Toma de medidas</option>
+                                        <option value="delivery">Entrega de prenda</option>
+                                        <option value="consultation">Consulta</option>
+                                    </select>
+                                </div>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#64748B', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Fecha</label>
+                                        <input
+                                            type="date"
+                                            value={appointmentForm.date}
+                                            onChange={(e) => setAppointmentForm({ ...appointmentForm, date: e.target.value })}
+                                            style={{ width: '100%', padding: '0.625rem 0.875rem', border: '1px solid #E2E8F0', borderRadius: '0.75rem', fontSize: '0.875rem', color: 'var(--color-charcoal)', boxSizing: 'border-box', outline: 'none' }}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#64748B', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Hora</label>
+                                        <div style={{ position: 'relative' }}>
+                                            <Clock size={16} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8', pointerEvents: 'none', zIndex: 1 }} />
+                                            <select
+                                                value={appointmentForm.time}
+                                                onChange={(e) => setAppointmentForm({ ...appointmentForm, time: e.target.value })}
+                                                style={{ width: '100%', padding: '0.625rem 0.875rem 0.625rem 2.2rem', border: '1px solid #E2E8F0', borderRadius: '0.75rem', fontSize: '0.875rem', color: 'var(--color-charcoal)', boxSizing: 'border-box', outline: 'none', background: 'white' }}
+                                            >
+                                                <option value="">{isLoadingSlots ? 'Cargando...' : 'Seleccionar hora'}</option>
+                                                {Array.from({ length: 25 }).map((_, i) => {
+                                                    const hour = Math.floor(i / 2) + 8;
+                                                    const minutes = i % 2 === 0 ? '00' : '30';
+                                                    const time = `${hour.toString().padStart(2, '0')}:${minutes}`;
+                                                    const isOccupied = occupiedSlots.includes(time);
+
+                                                    return (
+                                                        <option key={time} value={time} disabled={isOccupied}>
+                                                            {time} {isOccupied ? '(Ocupado)' : ''}
+                                                        </option>
+                                                    );
+                                                })}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#64748B', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Notas</label>
+                                    <textarea
+                                        rows={3}
+                                        placeholder="Detalles de la cita..."
+                                        value={appointmentForm.notes}
+                                        onChange={(e) => setAppointmentForm({ ...appointmentForm, notes: e.target.value })}
+                                        style={{ width: '100%', padding: '0.625rem 0.875rem', border: '1px solid #E2E8F0', borderRadius: '0.75rem', fontSize: '0.875rem', color: 'var(--color-charcoal)', resize: 'none', boxSizing: 'border-box', outline: 'none', fontFamily: 'inherit' }}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Actions */}
+                            <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem' }}>
+                                <button onClick={() => setIsAppointmentModalOpen(false)} style={{ flex: 1, padding: '0.75rem', border: '1px solid #E2E8F0', borderRadius: '0.75rem', background: 'white', color: '#64748B', fontWeight: 600, cursor: 'pointer', fontSize: '0.875rem' }}>
+                                    Cancelar
+                                </button>
+                                <motion.button
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    disabled={isSavingAppointment || !appointmentForm.date || !appointmentForm.time}
+                                    style={{
+                                        flex: 1, padding: '0.75rem', border: 'none', borderRadius: '0.75rem',
+                                        background: isSavingAppointment ? '#CBD5E1' : 'var(--color-terracotta)',
+                                        color: 'white', fontWeight: 700, cursor: (isSavingAppointment || !appointmentForm.date || !appointmentForm.time) ? 'not-allowed' : 'pointer', fontSize: '0.875rem'
+                                    }}
+                                    onClick={handleSaveAppointment}
+                                >
+                                    {isSavingAppointment ? 'Guardando...' : 'Guardar Cita'}
+                                </motion.button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* ── Modal: Editar Cliente ── */}
+            <EditClientModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                onSuccess={loadData}
+                client={{
+                    id: clientId || '',
+                    name: client.name,
+                    phone: client.phone,
+                    email: client.email,
+                    address: client.address,
+                    addressLink: client.addressLink,
+                    notes: client.notes
+                }}
+            />
         </motion.div>
     );
 };

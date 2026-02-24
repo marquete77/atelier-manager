@@ -167,6 +167,8 @@ export type Database = {
                     id: string
                     notes: string | null
                     phone: string | null
+                    address: string | null
+                    address_link: string | null
                     portal_user_id: string | null
                     updated_at: string | null
                     user_id: string
@@ -179,6 +181,8 @@ export type Database = {
                     id?: string
                     notes?: string | null
                     phone?: string | null
+                    address?: string | null
+                    address_link?: string | null
                     portal_user_id?: string | null
                     updated_at?: string | null
                     user_id: string
@@ -191,6 +195,8 @@ export type Database = {
                     id?: string
                     notes?: string | null
                     phone?: string | null
+                    address?: string | null
+                    address_link?: string | null
                     portal_user_id?: string | null
                     updated_at?: string | null
                     user_id?: string

@@ -1,13 +1,18 @@
 import { supabase } from '../config/supabase'
+import { Database } from '../types/database'
+
+type ClientInsert = Database['public']['Tables']['clients']['Insert']
 
 export const ClientService = {
-  // Example: Get all clients
   async getAll() {
     return await supabase.from('clients').select('*')
   },
 
-  // Example: Create client
-  // async create(data: TablesInsert<'clients'>) {
-  //   return await supabase.from('clients').insert(data)
-  // }
+  async create(data: ClientInsert) {
+    return await supabase.from('clients').insert(data).select().single()
+  },
+
+  async update(id: string, data: Partial<ClientInsert>) {
+    return await supabase.from('clients').update(data).eq('id', id).select().single()
+  }
 }

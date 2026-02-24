@@ -5,6 +5,7 @@ import { LoginView } from './views/Auth/LoginView'
 import { RegisterView } from './views/Auth/RegisterView'
 import { DashboardView } from './views/Dashboard/DashboardView'
 import { ClientsView } from './views/Clients/ClientsView'
+import { ClientProfileView } from './views/Clients/ClientProfile/ClientProfileView'
 import { MeasurementsView } from './views/Measurements/MeasurementsView'
 import { NewProjectView } from './views/Projects/NewProjectView'
 import { CalendarView } from './views/Calendar/CalendarView'
@@ -26,6 +27,7 @@ function App() {
             <Route element={<MainLayout />}>
               <Route path="/" element={<DashboardView />} />
               <Route path="/clients" element={<ClientsView />} />
+              <Route path="/clients/:clientId" element={<ClientProfileView />} />
               <Route path="/measurements" element={<MeasurementsView />} />
               <Route path="/projects" element={<NewProjectView />} />
               <Route path="/calendar" element={<CalendarView />} />

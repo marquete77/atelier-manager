@@ -1,73 +1,82 @@
-## AGENTS.md
+# Atelier Manager
 
-Proyecto: Atelier Manager
+## 1. Project Overview
+- **Project Name**: Atelier Manager
+- **Target Audience**: Independent Tailors and Seamstresses (Solopreneurs)
+- **Role**: Senior Fullstack Developer and Product Architect with a focus on UX for artisans.
+- **Language**: All user-facing text must be in Spanish.
 
-Rol del agente: Desarrollador Senior Fullstack y Arquitecto de Producto con enfoque en UX para artesanos.
+## 2. Objective
+Create a Progressive Web App (PWA) for the comprehensive management of small, one-person sewing workshops. The app should centralize appointments, clients, and technical measurements, eliminating the need for physical notebooks.
 
-Objetivo: Crear una aplicación web (PWA) para la gestión integral de pequeños talleres de costura unipersonales. La app debe centralizar citas, clientes y medidas técnicas, eliminando la necesidad de cuadernos físicos.
+## 3. Core Functionalities
 
-Datos importantes: 
- - Nombre del proyecto: Atelier Manager 
- - Público objetivo: Sastres y costureras independientes (Solopreneurs) 
- - Idioma: Todos los textos visibles en la aplicación deben estar en español
+### Client Management
+- **List View**: Rapid search by name or phone number.
+- **Detailed Profile**: Work history and contact details.
 
-Funcionalidades de la aplicación:
- - Gestión de Clientes: 
-  - Listado de clientes con buscador rápido por nombre o teléfono 
-  - Ficha detallada con historial de trabajos y datos de contacto 
- - Registro de Medidas: 
-  - Formulario técnico estructurado por bloques (Superior, Inferior, Mangas) 
-  - Capacidad de consulta rápida y visualización clara de datos numéricos
- - Registro de Arreglos: 
-  - Registro de tareas específicas: bastas, entalles, cambio de cierres, hombreras, etc.
-  - Capacidad de consulta rápida y visualización clara de datos numéricos
- - Agenda de Citas: 
-  - Calendario interactivo con vista semanal y mensual 
-  - Registro de citas vinculado a clientes con estado de entrega 
- - Dashboard: 
-  - Panel principal con resumen de tareas del día y próximas entregas
+### Measurement Records
+- **Structured Forms**: Technical forms grouped by sections (Upper Body, Lower Body, Sleeves).
+- **Quick Access**: Clear visualization of numerical data for easy consultation.
 
-Backend:
- - Base de datos y autenticación en Supabase
- - Login y registro de usuario para proteger los datos de los clientes
- - **Estrategia**: Arquitectura desacoplada.
- - **Fase 1**: Backend-as-a-Service con Supabase (PostgreSQL + Auth).
- - **Fase 2**: API Node.js dedicada para lógica compleja (pagos, multicuentas).
- - **Seguridad**: RLS y Supabase Auth.
+### Alteration Records
+- **Specific Tasks**: Hems, taking in, zipper replacement, shoulder pads, etc.
+- **Data Visualization**: Clear presentation for quick reference.
 
-Consideraciones: 
- - La edición de medidas y creación de citas debe poder gestionarse en ventanas modales
- - El diseño de las modales debe ser coherente con la estética general de la aplicación 
- - El buscador debe ser accesible desde cualquier parte de la navegación principal
+### Appointment Agenda
+- **Interactive Calendar**: Weekly and monthly views.
+- **Appointment Tracking**: Linked to clients with delivery status.
 
-Stack tecnológico: 
- - React con TypeScript 
- - Vite para el entorno de desarrollo 
- - Supabase (DB & Auth)
- - CSS Modules para estilos (CSS nativo en la medida de lo posible)
- - MUI (Material UI) para componentes base 
- - Lucide React para iconografía 
- - FullCalendar para la gestión de la agenda
+### Dashboard
+- **Main Panel**: Daily task summary and upcoming deliveries.
 
-Preferencias de diseño: 
- - Estilo creativo, limpio y sofisticado que evoque un taller de alta costura 
- - Uso de bordes redondeados (12px) y sombras suaves (Soft UI)
- - Diseño Mobile First para uso cómodo mientras se toman medidas
+## 4. Technical Architecture
 
-Preferencias de estilos: 
- - Eliminar TailwindCSS y usar CSS nativo o los estilos de sistema de MUI 
- - Colores: Primario Terracotta (#B25B52), Fondo Linen (#F5F5F0), Texto Charcoal (#2C3E50) 
- - Uso de medidas con rem, con un font-size base de 10px 
- - Tipografía: Playfair Display para títulos y Inter para cuerpo de texto 
- - Que la webapp sea responsive
+### Backend Strategy
+- **Architecture**: Decoupled.
+- **Phase 1**: Backend-as-a-Service using Supabase (PostgreSQL + Auth).
+- **Phase 2**: Dedicated Node.js API for complex logic (payments, multi-account support).
+- **Security**: Row Level Security (RLS) and Supabase Auth.
+- **Authentication**: User login/registration to protect client data.
 
-Preferencias de código:
- - HTML debe ser semántico
- - No uses alert, confirm o prompt; todo el feedback debe ser visual en el DOM (Snackbars o Modales) 
- - Tipado estricto con TypeScript para evitar errores en las medidas 
- - Prioriza código legible, sencillo y fácil de mantener
+### Tech Stack
+- **Frontend**: React with TypeScript.
+- **Build Tool**: Vite.
+- **Backend/DB**: Supabase (Database & Auth).
+- **Styling**: CSS Modules (preferred over TailwindCSS), Material UI (MUI) for base components.
+- **Icons**: Lucide React.
+- **Calendar**: FullCalendar.
 
-Estructura de archivos: 
- - Organizar por carpetas de componentes, hooks, servicios y vistas 
- - Mantener la lógica de negocio separada de la interfaz visual
+## 5. Design & UI/UX Guidelines
+
+### Design Philosophy
+- **Style**: Creative, clean, and sophisticated, evoking a high-fashion atelier.
+- **Visuals**: Rounded borders (12px), soft shadows (Soft UI).
+- **Mobile First**: Optimized for comfortable use while taking measurements.
+
+### Styling Preferences
+- **Framework**: Native CSS or MUI system styles (No TailwindCSS).
+- **Color Palette**:
+    - **Primary**: Terracotta (`#B25B52`)
+    - **Background**: Linen (`#F5F5F0`)
+    - **Text**: Charcoal (`#2C3E50`)
+- **Typography**:
+    - **Titles**: Playfair Display
+    - **Body**: Inter
+- **Units**: `rem` based measurements (base font-size: 10px).
+- **Responsiveness**: Fully responsive web app.
+
+### UX Considerations
+- **Modals**: Measurement editing and appointment creation must be handled in modals consistent with the app's aesthetic.
+- **Navigation**: Search must be accessible from anywhere in the main navigation.
+- **Feedback**: No `alert`, `confirm`, or `prompt`. All feedback must be visual within the DOM (Snackbars or Modals).
+
+## 6. Code Preferences
+- **HTML**: Semantic HTML.
+- **Type Safety**: Strict TypeScript to avoid measurement errors.
+- ** readability**: Prioritize legible, simple, and maintainable code.
+
+## 7. File Structure
+- Organize by feature/type: components, hooks, services, views.
+- **Separation of Concerns**: Keep business logic separate from UI components.
 
