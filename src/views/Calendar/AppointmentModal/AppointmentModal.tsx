@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Calendar, User } from 'lucide-react';
+import { APP_LABELS } from "@/constants/appearance";
 import styles from './AppointmentModal.module.css';
 
 interface Appointment {
@@ -54,7 +55,9 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onCl
                         <X size={20} />
                     </button>
                     <h2 className={styles.clientName}>{appointment.clientName}</h2>
-                    <p className={styles.appointmentType}>{appointment.type}</p>
+                    <p className={styles.appointmentType}>
+                        {APP_LABELS.appointmentTypes[appointment.type as keyof typeof APP_LABELS.appointmentTypes] || appointment.type}
+                    </p>
                 </header>
 
                 <div className={styles.content}>

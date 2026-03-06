@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     PlusCircle, Ruler, FileText, X, Camera,
-    Calendar, Users, Info, Loader2, DollarSign
+    Calendar, Users, Info, Loader2, DollarSign, ArrowLeft
 } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
@@ -268,8 +268,15 @@ export const NewProjectView: React.FC = () => {
             animate="show"
         >
             <header className={styles.viewHeader}>
-                <motion.div className={styles.viewTitleSection} variants={itemVariants}>
-                    <div className={styles.viewBreadcrumb}>
+                <motion.div className="view-title-section" variants={itemVariants}>
+                    <div className="view-breadcrumb">
+                        <button
+                            onClick={() => navigate(-1)}
+                        >
+                            <ArrowLeft size={18} />
+                            <span>Volver</span>
+                        </button>
+                        <span className="breadcrumb-separator">/</span>
                         <PlusCircle size={18} />
                         <span>Inicio de Trabajo</span>
                     </div>
@@ -281,7 +288,7 @@ export const NewProjectView: React.FC = () => {
                 </motion.div>
 
                 <motion.div className={styles.headerActions} variants={itemVariants}>
-                    <button className={styles.cancelButton}>Cancelar</button>
+                    <button className={styles.cancelButton} onClick={() => navigate(-1)}>Cancelar</button>
                     <motion.button
                         className={styles.createButton}
                         onClick={handleCreateProject}

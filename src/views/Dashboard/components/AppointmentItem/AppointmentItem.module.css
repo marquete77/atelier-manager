@@ -1,0 +1,63 @@
+.appointmentItem {
+    display: flex;
+    gap: 1.25rem;
+    padding: 1.5rem;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.appointmentItem:last-child {
+    border-bottom: none;
+}
+
+.timeBox {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-lg);
+    flex-shrink: 0;
+}
+
+.timeText {
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+.appointmentDetails {
+    flex: 1;
+    min-width: 0;
+}
+
+.appointmentHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.25rem;
+}
+
+.clientName {
+    font-weight: 700;
+    color: var(--color-charcoal);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.appointmentTypeBadge {
+    font-size: 0.625rem;
+    font-weight: 700;
+    padding: 0.25rem 0.6rem;
+    border-radius: 9999px;
+    text-transform: uppercase;
+}
+
+.appointmentStatus {
+    font-size: 0.8125rem;
+    color: var(--color-charcoal-light);
+    margin: 0;
+}

@@ -127,13 +127,12 @@ export const MeasurementsView: React.FC = () => {
           <div className="view-breadcrumb">
             <button
               onClick={() => navigate(-1)}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', color: 'inherit', padding: 0 }}
             >
               <ArrowLeft size={18} />
               <span>Volver</span>
             </button>
-            <span style={{ opacity: 0.5 }}>/</span>
-            <RulerIcon />
+            <span className="breadcrumb-separator">/</span>
+            <Scissors size={18} />
             <span>Nueva Ficha</span>
           </div>
           <h1 className="view-title">Ficha de Medidas</h1>

@@ -1,17 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
   Calendar as CalendarIcon,
-  FileText,
   TrendingUp,
   Clock,
-  CheckCircle2,
   ChevronRight,
   Loader2
 } from 'lucide-react';
-import { supabase } from "@/config/supabase";
 import { useAuth } from "@/hooks/useAuth";
+import { formatCurrency } from '@/utils/currency';
+import { containerVariants, itemVariants, listVariants } from '@/constants/animations';
+import { useDashboardData } from '@/hooks/useDashboardData';
 import styles from './DashboardView.module.css';
+
+// Modular Components
+import { AppointmentItem } from './components/AppointmentItem/AppointmentItem';
+import { ProjectCard } from './components/ProjectCard/ProjectCard';
+import { StatCard } from '@/components/common/StatCard/StatCard';
 
 interface AppointmentEntry {
   id: string;
@@ -27,128 +33,17 @@ interface ProjectEntry {
   id: string;
   title: string;
   status: string;
-  deadline: string;
+  images: string[] | null;
+  deliveryDate?: string;
   clients: {
     full_name: string;
   };
 }
 
-// Animation Variants
-const containerVariants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2
-    }
-  }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      type: "spring",
-      stiffness: 300,
-      damping: 30
-    }
-  }
-};
-
-const listVariants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.07
-    }
-  }
-};
 
 export const DashboardView: React.FC = () => {
-  const { user } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({
-    appointmentsToday: 0,
-    pendingDeliveries: 0,
-    monthlyRevenue: 0
-  });
-  const [recentAppointments, setRecentAppointments] = useState<AppointmentEntry[]>([]);
-  const [recentProjects, setRecentProjects] = useState<ProjectEntry[]>([]);
-
-  useEffect(() => {
-    if (user) {
-      fetchDashboardData();
-    }
-  }, [user]);
-
-  const fetchDashboardData = async () => {
-    if (!user) return;
-
-    try {
-      setLoading(true);
-      const today = new Date().toISOString().split('T')[0];
-
-      // 1. Appointments Today
-      const { count: aptCount } = await supabase
-        .from('appointments')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .gte('start_time', `${today}T00:00:00`)
-        .lte('start_time', `${today}T23:59:59`);
-
-      // 2. Pending Projects
-      const { count: projCount } = await supabase
-        .from('projects')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .in('status', ['pending', 'in_progress']);
-
-      // 3. Monthly Revenue
-      const firstDayOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
-      const { data: revenueData } = await supabase
-        .from('projects')
-        .select('total_cost')
-        .eq('user_id', user.id)
-        .gte('created_at', firstDayOfMonth);
-
-      const totalRevenue = revenueData?.reduce((acc, curr) => acc + (Number(curr.total_cost) || 0), 0) || 0;
-
-      setStats({
-        appointmentsToday: aptCount || 0,
-        pendingDeliveries: projCount || 0,
-        monthlyRevenue: totalRevenue
-      });
-
-      // 4. Fetch Recent Appointments
-      const { data: apts } = await supabase
-        .from('appointments')
-        .select('id, start_time, type, status, clients(full_name)')
-        .eq('user_id', user.id)
-        .order('start_time', { ascending: true })
-        .limit(4);
-
-      setRecentAppointments(apts as any || []);
-
-      // 5. Fetch Recent Projects
-      const { data: projs } = await supabase
-        .from('projects')
-        .select('id, title, status, deadline, clients(full_name)')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(3);
-
-      setRecentProjects(projs as any || []);
-
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const navigate = useNavigate();
+  const { stats, recentAppointments, recentProjects, loading } = useDashboardData();
 
   if (loading) {
     return (
@@ -169,8 +64,8 @@ export const DashboardView: React.FC = () => {
       <motion.header className="view-header" variants={itemVariants}>
         <div className="view-title-section">
           <div className="view-breadcrumb">
-            <CalendarIcon size={18} />
-            <span>Dashboard</span>
+            <TrendingUp size={18} />
+            <span>Panel de Control</span>
           </div>
           <h1 className="view-title">Resumen del Día</h1>
           <p className="view-subtitle">
@@ -184,19 +79,22 @@ export const DashboardView: React.FC = () => {
           label="Citas para hoy"
           value={stats.appointmentsToday.toString()}
           icon={CalendarIcon}
-          type="appointments"
+          badge="Hoy"
+          colorScheme="blue"
         />
         <StatCard
           label="Entregas Pendientes"
           value={stats.pendingDeliveries.toString()}
           icon={Clock}
-          type="projects"
+          badge="Pendientes"
+          colorScheme="orange"
         />
         <StatCard
           label="Ingresos del Mes"
-          value={`${stats.monthlyRevenue}€`}
+          value={formatCurrency(stats.monthlyRevenue)}
           icon={TrendingUp}
-          type="revenue"
+          badge="Meta"
+          colorScheme="emerald"
         />
       </motion.div>
 
@@ -208,6 +106,7 @@ export const DashboardView: React.FC = () => {
               className={styles.viewAllLink}
               whileHover={{ x: 5 }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => navigate('/calendar')}
             >
               Ver agenda <ChevronRight size={16} />
             </motion.button>
@@ -228,6 +127,7 @@ export const DashboardView: React.FC = () => {
               className={styles.viewAllLink}
               whileHover={{ x: 5 }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => navigate('/clients')}
             >
               Ver todos <ChevronRight size={16} />
             </motion.button>
@@ -244,79 +144,3 @@ export const DashboardView: React.FC = () => {
     </motion.div>
   );
 };
-
-const StatCard = ({ icon: Icon, label, value, type }: any) => {
-  const getColors = () => {
-    switch (type) {
-      case 'appointments': return { bg: styles.bgBlue50, icon: styles.textBlue600, badge: 'Hoy', badgeBg: styles.bgGreen100, badgeText: styles.textGreen700 };
-      case 'projects': return { bg: styles.bgOrange50, icon: styles.textOrange600, badge: 'Pendientes', badgeBg: styles.bgOrange100, badgeText: styles.textOrange700 };
-      case 'revenue': return { bg: styles.bgEmerald50, icon: styles.textEmerald600, badge: 'Meta', badgeBg: styles.bgRed100, badgeText: styles.textRed700 };
-      default: return { bg: '', icon: '', badge: '', badgeBg: '', badgeText: '' };
-    }
-  };
-  const colors = getColors();
-
-  return (
-    <motion.div
-      className={styles.statCard}
-      variants={itemVariants}
-      whileHover={{ y: -5, transition: { duration: 0.2 } }}
-    >
-      <div className={styles.statHeader}>
-        <div className={`${styles.statIconWrapper} ${colors.bg} ${colors.icon}`}>
-          <Icon size={20} />
-        </div>
-        <span className={`${styles.statBadge} ${colors.badgeBg} ${colors.badgeText}`}>
-          {colors.badge}
-        </span>
-      </div>
-      <p className={styles.statLabel}>{label}</p>
-      <h3 className={styles.statValue}>{value}</h3>
-    </motion.div>
-  );
-};
-
-const AppointmentItem = ({ apt }: { apt: AppointmentEntry }) => (
-  <motion.div
-    className={styles.appointmentItem}
-    variants={itemVariants}
-    whileHover={{ x: 4, backgroundColor: "#F8FAFC" }}
-  >
-    <div className={styles.timeBoxInactive}>
-      <span className={styles.timeText}>
-        {new Date(apt.start_time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
-      </span>
-    </div>
-    <div className={styles.appointmentDetails}>
-      <div className={styles.appointmentHeader}>
-        <h4 className={styles.clientName}>{apt.clients?.full_name}</h4>
-        <span className={styles.appointmentTypeBadge}>{apt.type}</span>
-      </div>
-      <p className={styles.appointmentStatus}>{apt.status}</p>
-    </div>
-  </motion.div>
-);
-
-const ProjectCard = ({ project }: { project: ProjectEntry }) => (
-  <motion.div
-    className={styles.projectCard}
-    variants={itemVariants}
-    whileHover={{ y: -4, boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)" }}
-  >
-    <div className={styles.projectInfo}>
-      <div className={styles.projectHeader}>
-        <h4 className={styles.projectName}>{project.title}</h4>
-        <span className={styles.projectStatusBadge}>
-          {project.status}
-        </span>
-      </div>
-      <p className={styles.projectClient}>Cliente: {project.clients?.full_name}</p>
-      <div className={styles.progressBarContainer}>
-        <div
-          className={styles.progressBar}
-          style={{ width: project.status === 'delivered' ? '100%' : '60%' }}
-        ></div>
-      </div>
-    </div>
-  </motion.div>
-);

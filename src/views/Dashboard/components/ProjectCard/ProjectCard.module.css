@@ -1,0 +1,157 @@
+.projectCard {
+    background-color: var(--color-surface);
+    padding: 1rem;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-soft);
+    border: 1px solid #F8FAFC;
+    display: flex;
+    gap: 1.25rem;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.projectImageContainer {
+    width: 80px;
+    height: 80px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 1px solid #F1F5F9;
+}
+
+.projectImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.projectPlaceholder {
+    width: 100%;
+    height: 100%;
+    background-color: #F8FAFC;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.projectInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.projectHeader {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.25rem;
+}
+
+.projectName {
+    font-weight: 700;
+    color: var(--color-charcoal);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+}
+
+.projectClient {
+    font-size: 0.875rem;
+    color: var(--color-charcoal-light);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+}
+
+.urgencyBadge {
+    font-size: 0.625rem;
+    font-weight: 800;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    text-transform: uppercase;
+}
+
+.today {
+    background-color: #FEE2E2;
+    color: #DC2626;
+}
+
+.tomorrow {
+    background-color: #FFF7ED;
+    color: #EA580C;
+}
+
+.this-week {
+    background-color: #EFF6FF;
+    color: #2563EB;
+}
+
+.future {
+    background-color: #F1F5F9;
+    color: #64748B;
+}
+
+.stepperContainer {
+    margin-top: 1rem;
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+.stepperTrack {
+    height: 3px;
+    background-color: #F1F5F9;
+    border-radius: 9999px;
+    position: relative;
+    margin: 0 10px;
+}
+
+.stepperProgress {
+    position: absolute;
+    height: 100%;
+    background-color: var(--color-terracotta);
+    border-radius: 9999px;
+    transition: width 0.4s ease;
+}
+
+.stepperPoints {
+    display: flex;
+    justify-content: space-between;
+    margin-top: -6px;
+    position: relative;
+}
+
+.stepperStep {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    width: 0;
+    flex: 1;
+}
+
+.stepPoint {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #E2E8F0;
+    border: 2px solid white;
+    z-index: 2;
+    transition: background-color 0.3s;
+}
+
+.stepActive {
+    background-color: var(--color-terracotta);
+}
+
+.stepLabel {
+    font-size: 0.6rem;
+    color: var(--color-charcoal-light);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.labelActive {
+    color: var(--color-terracotta);
+    font-weight: 700;
+}

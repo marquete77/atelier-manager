@@ -38,10 +38,7 @@
     font-weight: 700;
 }
 
-.separator {
-    color: #D1D5DB;
-    /* gray-300 */
-}
+/* Global classes from index.css are used for viewHeader, viewBreadcrumb, viewTitle, etc. */
 
 /* Header Actions */
 .headerActions {

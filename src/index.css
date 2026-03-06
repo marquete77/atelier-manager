@@ -15,11 +15,23 @@
   --color-success: #22C55E;
   --color-error: #EF4444;
 
+  /* Categorías de Citas */
+  --color-fitting: #B25B52;
+  --color-fitting-light: #FDE2E1;
+  --color-measurement: #2563EB;
+  --color-measurement-light: #E1F0FD;
+  --color-delivery: #15803D;
+  --color-delivery-light: #E1F5E8;
+  --color-consultation: #B45309;
+  --color-consultation-light: #FEF5E1;
+
   /* Bordes */
+  --radius-2xl: 16px;
   --radius-xl: 12px;
   --radius-lg: 8px;
 
   /* Sombras (Soft UI) */
+  --shadow-md: 0 4px 12px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
   --shadow-soft: 0 4px 20px -2px rgba(44, 62, 80, 0.05);
   --shadow-card: 0 2px 12px -2px rgba(44, 62, 80, 0.03);
 
@@ -83,11 +95,33 @@ body {
   align-items: center;
   gap: 0.5rem;
   color: var(--color-terracotta);
-  font-size: 1rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 0.5rem;
+}
+
+.view-breadcrumb button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: inherit;
+  padding: 0;
+  font: inherit;
+  transition: opacity 0.2s;
+}
+
+.view-breadcrumb button:hover {
+  opacity: 0.7;
+}
+
+.view-breadcrumb .breadcrumb-separator {
+  opacity: 0.4;
+  margin: 0 0.25rem;
 }
 
 .view-title {

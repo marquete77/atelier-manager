@@ -36,37 +36,7 @@
     }
 }
 
-.viewTitleSection {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.viewBreadcrumb {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--color-charcoal-light);
-    font-size: 0.875rem;
-    font-weight: 500;
-}
-
-.viewBreadcrumb button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: inherit;
-    padding: 0;
-    font: inherit;
-    transition: color 0.2s;
-}
-
-.viewBreadcrumb button:hover {
-    color: var(--color-terracotta);
-}
+/* Global classes from index.css are used for viewHeader, viewBreadcrumb, viewTitle, etc. */
 
 .viewTitle {
     font-family: var(--font-serif);

@@ -3,43 +3,24 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     MessageCircle, Phone, Calendar, Plus, Mail, MapPin,
-    Wallet, Ruler, RefreshCw, History, Check, Scissors, Users, Loader2, X, Clock, Edit, ExternalLink
+    Wallet, Ruler, RefreshCw, History, Check, Scissors, Users, Loader2, X, Clock, Edit, ExternalLink, ArrowLeft
 } from 'lucide-react';
 import { ViewState } from '../../../../types';
 import { supabase } from '@/config/supabase';
+import { formatDate } from '@/utils/date';
+import { formatCurrency } from '@/utils/currency';
+import { containerVariants, itemVariants } from '@/constants/animations';
+import { Badge } from '@/components/common/Badge/Badge';
 import { EditClientModal } from '../../../components/forms/EditClientModal/EditClientModal';
 import { AppointmentService } from '../../../services/appointment.service';
 import { useAuth } from '../../../hooks/useAuth';
+import { useClientDetails } from '@/hooks/useClientDetails';
 import styles from './ClientProfileView.module.css';
 
 interface ClientProfileViewProps {
     onChangeView?: (view: ViewState) => void;
 }
 
-// Animation Variants
-const containerVariants = {
-    hidden: { opacity: 0 },
-    show: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.1,
-            duration: 0.6,
-            ease: "easeOut"
-        }
-    }
-};
-
-const itemVariants = {
-    hidden: { opacity: 0, y: 15 },
-    show: {
-        opacity: 1,
-        y: 0,
-        transition: {
-            duration: 0.5,
-            ease: "easeOut"
-        }
-    }
-};
 
 const statusLabel: Record<string, string> = {
     pending: 'Pendiente',
@@ -48,37 +29,46 @@ const statusLabel: Record<string, string> = {
     delivered: 'Entregado',
 };
 
-const formatDate = (d: string | null) => {
-    if (!d) return '—';
-    // Si es solo fecha YYYY-MM-DD, evitamos desfase de zona horaria
-    if (d.includes('-') && d.length === 10) {
-        const [year, month, day] = d.split('-').map(Number);
-        // Creamos la fecha localmente (mes es 0-indexed)
-        return new Date(year, month - 1, day).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
-    }
-    return new Date(d).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
-};
 
 export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeView }) => {
     const { clientId } = useParams<{ clientId: string }>();
     const navigate = useNavigate();
     const { user } = useAuth();
 
-    const [loading, setLoading] = useState(true);
+    const {
+        client: rawClient,
+        projects: rawProjects,
+        measurements: rawMeasurements,
+        loading,
+        refresh: loadData
+    } = useClientDetails(clientId);
+
     const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [client, setClient] = useState({
-        name: '',
+
+    // Process client data for view
+    const client = {
+        name: rawClient?.full_name || '',
         avatarUrl: '',
-        email: '',
-        phone: '',
-        address: '',
-        addressLink: '',
+        email: rawClient?.email || '',
+        phone: rawClient?.phone || '',
+        address: rawClient?.address || '',
+        addressLink: rawClient?.address_link || '',
         balance: 0,
-        notes: '',
-        measures: {} as Record<string, number>,
-        projects: [] as { id: string; title: string; status: string; date: string; price: number; type: string }[],
-    });
+        notes: rawClient?.notes || '',
+        measures: (rawMeasurements?.values as Record<string, number>) || {},
+        projects: (rawProjects || []).map((p: any) => {
+            const deliveryApt = p.appointments?.find((a: any) => a.type === 'delivery');
+            return {
+                id: p.id,
+                title: p.title,
+                status: statusLabel[p.status] ?? p.status ?? '—',
+                date: deliveryApt ? `Entrega: ${formatDate(deliveryApt.start_time)}` : formatDate(p.created_at),
+                price: p.total_cost ?? 0,
+                type: p.type ?? 'confection',
+            };
+        }),
+    };
 
     const [appointmentForm, setAppointmentForm] = useState({
         type: 'fitting',
@@ -91,48 +81,6 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
     const [occupiedSlots, setOccupiedSlots] = useState<string[]>([]);
     const [isLoadingSlots, setIsLoadingSlots] = useState(false);
     const [activeMeasureTab, setActiveMeasureTab] = useState<'upper' | 'lower'>('upper');
-
-    const loadData = async () => {
-        if (!clientId) return;
-        setLoading(true);
-        const [{ data: c }, { data: projs }, { data: meas }] = await Promise.all([
-            supabase.from('clients').select('*').eq('id', clientId).single(),
-            supabase.from('projects').select('*, appointments(*)').eq('client_id', clientId).order('created_at', { ascending: false }),
-            supabase.from('measurements').select('*').eq('client_id', clientId).order('created_at', { ascending: false }).limit(1),
-        ]);
-
-        console.log('📋 Proyectos cargados en ficha de cliente (con citas):', projs);
-
-        if (c) {
-            setClient({
-                name: c.full_name,
-                avatarUrl: '',
-                email: c.email ?? '',
-                phone: c.phone ?? '',
-                address: c.address ?? '',
-                addressLink: c.address_link ?? '',
-                balance: 0,
-                notes: c.notes ?? '',
-                measures: (meas?.[0]?.values as Record<string, number>) ?? {},
-                projects: (projs ?? []).map((p: any) => {
-                    const deliveryApt = p.appointments?.find((a: any) => a.type === 'delivery');
-                    return {
-                        id: p.id,
-                        title: p.title,
-                        status: statusLabel[p.status] ?? p.status ?? '—',
-                        date: deliveryApt ? `Entrega: ${formatDate(deliveryApt.start_time)}` : formatDate(p.created_at),
-                        price: p.total_cost ?? 0,
-                        type: p.type ?? 'confection',
-                    };
-                }),
-            });
-        }
-        setLoading(false);
-    };
-
-    useEffect(() => {
-        loadData();
-    }, [clientId]);
 
     const hasMeasures = Object.keys(client.measures).length > 0;
 
@@ -210,6 +158,13 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
                         </div>
                         <div className="view-title-section">
                             <div className="view-breadcrumb">
+                                <button
+                                    onClick={() => navigate('/clients')}
+                                >
+                                    <ArrowLeft size={18} />
+                                    <span>Volver</span>
+                                </button>
+                                <span className="breadcrumb-separator">/</span>
                                 <Users size={18} />
                                 <span>Perfil de Cliente</span>
                             </div>
@@ -325,7 +280,7 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
                                     <Wallet size={20} />
                                     <span>Saldo Pendiente:</span>
                                 </div>
-                                <span className={styles.balanceValue}>${client.balance}</span>
+                                <span className={styles.balanceValue}>{formatCurrency(client.balance)}</span>
                             </div>
                         </div>
                     </motion.section>
@@ -481,13 +436,16 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
                                 <div className={styles.timelineCard}>
                                     <div className={styles.timelineHeader}>
                                         <div className={styles.timelineTitle}>{project.title}</div>
-                                        <span className={`${styles.statusBadge} ${project.status === 'Entregado' ? styles.statusDelivered : styles.statusProcess}`}>
+                                        <Badge
+                                            type={project.status === 'Entregado' ? 'success' : 'warning'}
+                                            variant="filled"
+                                        >
                                             {project.status}
-                                        </span>
+                                        </Badge>
                                     </div>
                                     <div className={styles.timelineDetails}>
                                         <p>{project.date}</p>
-                                        <p className={styles.timelinePrice}>${project.price.toFixed(2)}</p>
+                                        <p className={styles.timelinePrice}>{formatCurrency(project.price)}</p>
                                     </div>
                                 </div>
                             </motion.div>

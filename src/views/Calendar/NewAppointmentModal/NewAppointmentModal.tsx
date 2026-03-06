@@ -48,10 +48,10 @@ export const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ isOpen
                 <div className="flex flex-col gap-2">
                     <label className="text-sm font-medium text-charcoal-light">Tipo de Cita</label>
                     <select className="w-full bg-linen border border-gray-200 rounded-xl p-3 focus:outline-none focus:border-terracotta">
-                        <option>Toma de Medidas</option>
-                        <option>Primera Prueba</option>
-                        <option>Segunda Prueba</option>
-                        <option>Entrega Final</option>
+                        <option value="measurement">Medición de Cliente</option>
+                        <option value="fitting">Prueba de Prenda</option>
+                        <option value="delivery">Entrega de Proyecto</option>
+                        <option value="consultation">Consulta / Otros</option>
                     </select>
                 </div>
 

@@ -13,6 +13,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from "@/config/supabase";
 import { useAuth } from "@/hooks/useAuth";
+import { THEME_COLORS, APP_LABELS, APPOINTMENT_TYPES } from "@/constants/appearance";
 import styles from './CalendarView.module.css';
 import { AppointmentModal } from './AppointmentModal/AppointmentModal';
 import { NewAppointmentModal } from './NewAppointmentModal/NewAppointmentModal';
@@ -93,10 +94,8 @@ export const CalendarView: React.FC = () => {
 
   const getCategoryBg = (type: string) => {
     const t = type?.toLowerCase() || '';
-    if (t.includes('fitting') || t.includes('prueba')) return '#FDE2E1'; // Soft Terracotta
-    if (t.includes('measurement') || t.includes('medicion')) return '#E1F0FD'; // Soft Blue
-    if (t.includes('delivery') || t.includes('entrega')) return '#E1F5E8'; // Soft Green
-    return '#FEF5E1'; // Soft Yellow (Consultas)
+    const color = (THEME_COLORS.appointments as any)[t] || THEME_COLORS.appointments.default;
+    return color.light;
   };
 
   const handleAppointmentClick = (e: React.MouseEvent, apt: Appointment) => {
@@ -266,9 +265,9 @@ export const CalendarView: React.FC = () => {
           <div className={styles.filterList}>
             <div className={styles.filterList}>
               {[
-                { id: 'fitting', label: 'Pruebas', color: '#B25B52' },
-                { id: 'measurement', label: 'Mediciones', color: '#60A5FA' },
-                { id: 'delivery', label: 'Entregas', color: '#4CAF50' },
+                { id: APPOINTMENT_TYPES.FITTING, label: APP_LABELS.appointmentTypes.fitting, color: THEME_COLORS.appointments.fitting.main },
+                { id: APPOINTMENT_TYPES.MEASUREMENT, label: APP_LABELS.appointmentTypes.measurement, color: THEME_COLORS.appointments.measurement.main },
+                { id: APPOINTMENT_TYPES.DELIVERY, label: APP_LABELS.appointmentTypes.delivery, color: THEME_COLORS.appointments.delivery.main },
               ].map(cat => (
                 <div
                   key={cat.id}
@@ -415,7 +414,7 @@ export const CalendarView: React.FC = () => {
                               >
                                 <span className={styles.desktopAptTime}>
                                   {new Date(apt.start_time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
-                                  {` ${apt.type === 'fitting' ? 'Prueba' : apt.type === 'measurement' ? 'Medición' : apt.type === 'delivery' ? 'Entrega' : 'Cita'}`}
+                                  {` ${APP_LABELS.appointmentTypes[apt.type as keyof typeof APP_LABELS.appointmentTypes] || apt.type}`}
                                 </span>
                                 <span className={styles.desktopAptClient}>{apt.clients?.full_name}</span>
                               </motion.div>
