@@ -38,7 +38,7 @@ export const useDashboardData = () => {
                 supabase.from('projects').select('*', { count: 'exact', head: true }).eq('user_id', user.id).in('status', ['pending', 'in_progress']),
                 supabase.from('projects').select('total_cost').eq('user_id', user.id).gte('created_at', firstDayOfMonth),
                 AppointmentService.getDashboardAppointments(user.id, 10),
-                supabase.from('projects').select('id, title, status, images, clients(full_name), appointments(start_time, type)').eq('user_id', user.id).in('status', ['pending', 'in_progress']).order('created_at', { ascending: false }).limit(4)
+                supabase.from('projects').select('id, title, status, images, deposit, total_cost, description, type, clients(full_name, phone), appointments(start_time, type)').eq('user_id', user.id).in('status', ['pending', 'in_progress']).order('created_at', { ascending: false }).limit(4)
             ]);
 
             const totalRevenue = revenueData?.reduce((acc, curr) => acc + (Number(curr.total_cost) || 0), 0) || 0;

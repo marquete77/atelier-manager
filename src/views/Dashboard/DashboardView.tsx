@@ -19,31 +19,13 @@ import { AppointmentItem } from './components/AppointmentItem/AppointmentItem';
 import { ProjectCard } from './components/ProjectCard/ProjectCard';
 import { StatCard } from '@/components/common/StatCard/StatCard';
 
-interface AppointmentEntry {
-  id: string;
-  start_time: string;
-  type: string;
-  status: string;
-  clients: {
-    full_name: string;
-  };
-}
-
-interface ProjectEntry {
-  id: string;
-  title: string;
-  status: string;
-  images: string[] | null;
-  deliveryDate?: string;
-  clients: {
-    full_name: string;
-  };
-}
-
-
 export const DashboardView: React.FC = () => {
   const navigate = useNavigate();
   const { stats, recentAppointments, recentProjects, loading } = useDashboardData();
+
+  const handleProjectClick = (project: any) => {
+    navigate(`/projects/${project.id}`);
+  };
 
   if (loading) {
     return (
@@ -129,14 +111,18 @@ export const DashboardView: React.FC = () => {
               className={styles.viewAllLink}
               whileHover={{ x: 5 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => navigate('/clients')}
+              onClick={() => navigate('/projects')}
             >
               Ver todos <ChevronRight size={16} />
             </motion.button>
           </div>
           <motion.div className={styles.projectsList} variants={listVariants}>
             {recentProjects.length > 0 ? recentProjects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
+              <ProjectCard
+                key={project.id}
+                project={project}
+                onClick={handleProjectClick}
+              />
             )) : (
               <div className="p-8 text-center text-gray-400">No hay proyectos activos</div>
             )}

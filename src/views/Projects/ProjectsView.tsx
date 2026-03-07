@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import {
     FileText,
     Search,
@@ -26,6 +27,7 @@ import styles from './ProjectsView.module.css';
 type ProjectStatus = string;
 
 export const ProjectsView: React.FC = () => {
+    const navigate = useNavigate();
     const { user } = useAuth();
     const [projects, setProjects] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -80,10 +82,6 @@ export const ProjectsView: React.FC = () => {
 
     // Logging whenever the filter changes
     useEffect(() => {
-        console.log('--- ESTADO DE FILTRADO LOCAL ---');
-        console.log('Filtro actual:', filter);
-        console.log('Proyectos totales:', projects.length);
-        console.log('Proyectos filtrados:', filteredProjects.length);
         if (filteredProjects.length === 0 && projects.length > 0) {
             console.log('Estados disponibles en los proyectos actuales:', [...new Set(projects.map(p => p.status))]);
         }
@@ -169,11 +167,18 @@ export const ProjectsView: React.FC = () => {
                                         variants={itemVariants}
                                         layout
                                     >
-                                        <div className={styles.cardHeader}>
-                                            <h3 className={styles.projectTitle}>{project.title}</h3>
-                                            <span className={styles.typeBadge}>
-                                                {project.type === 'confection' ? 'Confección' : 'Arreglo'}
-                                            </span>
+                                        <div
+                                            className={styles.cardHeader}
+                                            onClick={() => navigate(`/projects/${project.id}`)}
+                                            style={{ cursor: 'pointer' }}
+                                        >
+                                            <div className="flex-1">
+                                                <h3 className={styles.projectTitle}>{project.title}</h3>
+                                                <span className={styles.typeBadge}>
+                                                    {project.type === 'confection' ? 'Confección' : 'Arreglo'}
+                                                </span>
+                                            </div>
+                                            <ChevronRight size={20} className="text-slate-300 group-hover:text-terracotta transition-colors" />
                                         </div>
 
                                         <div className={styles.clientInfo}>

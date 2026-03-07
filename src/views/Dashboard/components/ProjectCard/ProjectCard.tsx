@@ -5,6 +5,7 @@ import { FileText } from 'lucide-react';
 import { getUrgencyLabel } from '@/utils/date';
 import { itemVariants } from '@/constants/animations';
 import { Badge } from '@/components/common/Badge/Badge';
+import { useProjectStatuses } from '@/hooks/useProjectStatuses';
 import styles from './ProjectCard.module.css';
 
 interface ProjectEntry {
@@ -21,33 +22,24 @@ interface ProjectEntry {
 
 interface ProjectCardProps {
     project: ProjectEntry;
+    onClick?: (project: ProjectEntry) => void;
 }
 
-export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
+export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) => {
     const navigate = useNavigate();
+    const { statuses, STATUS_ORDER } = useProjectStatuses();
 
     const urgency = getUrgencyLabel(project.deliveryDate);
     const firstImage = project.images && project.images.length > 0 ? project.images[0] : null;
 
-    const phases = ['Diseño', 'Corte', 'Costura', 'Entrega'];
-    const getPhaseIndex = (status: string) => {
-        switch (status) {
-            case 'pending': return 0;
-            case 'in_progress': return 2;
-            case 'completed': return 3;
-            case 'delivered': return 4;
-            default: return 0;
-        }
-    };
-
-    const activePhase = getPhaseIndex(project.status || 'pending');
+    const activePhase = STATUS_ORDER.indexOf(project.status || 'pending');
 
     return (
         <motion.div
             className={styles.projectCard}
             variants={itemVariants}
             whileHover={{ y: -4, boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)" }}
-            onClick={() => navigate(`/clients/${project.id ? (project as any).client_id || '' : ''}`)}
+            onClick={() => onClick?.(project)}
         >
             <div className={styles.projectImageContainer}>
                 {firstImage ? (
@@ -81,11 +73,11 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
                         />
                     </div>
                     <div className={styles.stepperPoints}>
-                        {phases.map((phase, idx) => (
-                            <div key={phase} className={styles.stepperStep}>
+                        {statuses.map((status, idx) => (
+                            <div key={status.id} className={styles.stepperStep}>
                                 <div className={`${styles.stepPoint} ${idx <= activePhase ? styles.stepActive : ''}`} />
                                 <span className={`${styles.stepLabel} ${idx === activePhase ? styles.labelActive : ''}`}>
-                                    {phase}
+                                    {status.label}
                                 </span>
                             </div>
                         ))}

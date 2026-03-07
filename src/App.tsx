@@ -11,6 +11,7 @@ import { NewProjectView } from './views/Projects/NewProjectView'
 import { ProjectsView } from './views/Projects/ProjectsView'
 import { CalendarView } from './views/Calendar/CalendarView'
 import { SettingsView } from './views/Settings/SettingsView'
+import { ProjectProfileView } from './views/Projects/ProjectProfile/ProjectProfileView'
 import { MainLayout } from './components/layout/MainLayout'
 
 
@@ -32,6 +33,7 @@ function App() {
               <Route path="/clients/:clientId/measurements" element={<MeasurementsView />} />
               <Route path="/clients/:clientId/projects/new" element={<NewProjectView />} />
               <Route path="/projects" element={<ProjectsView />} />
+              <Route path="/projects/:projectId" element={<ProjectProfileView />} />
               <Route path="/calendar" element={<CalendarView />} />
               <Route path="/settings" element={<SettingsView />} />
               <Route path="/dashboard" element={<Navigate to="/" replace />} />
