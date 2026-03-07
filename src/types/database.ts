@@ -251,6 +251,33 @@ export type Database = {
                     },
                 ]
             }
+            project_statuses: {
+                Row: {
+                    color: string
+                    created_at: string | null
+                    id: string
+                    icon: string
+                    label: string
+                    sort_order: number
+                }
+                Insert: {
+                    color: string
+                    created_at?: string | null
+                    id: string
+                    icon: string
+                    label: string
+                    sort_order: number
+                }
+                Update: {
+                    color?: string
+                    created_at?: string | null
+                    id?: string
+                    icon?: string
+                    label?: string
+                    sort_order?: number
+                }
+                Relationships: []
+            }
             projects: {
                 Row: {
                     client_id: string

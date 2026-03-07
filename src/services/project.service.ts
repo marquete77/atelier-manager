@@ -11,6 +11,13 @@ export const ProjectService = {
             .order('created_at', { ascending: false })
     },
 
+    async getStatuses() {
+        return await supabase
+            .from('project_statuses')
+            .select('*')
+            .order('sort_order', { ascending: true })
+    },
+
     async create(data: ProjectInsert) {
         return await supabase
             .from('projects')

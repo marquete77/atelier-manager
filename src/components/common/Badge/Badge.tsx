@@ -6,16 +6,21 @@ interface BadgeProps {
     type?: 'success' | 'warning' | 'error' | 'info' | 'neutral';
     variant?: 'filled' | 'outline' | 'ghost';
     className?: string;
+    style?: React.CSSProperties;
 }
 
 export const Badge: React.FC<BadgeProps> = ({
     children,
     type = 'neutral',
     variant = 'filled',
-    className = ''
+    className = '',
+    style
 }) => {
     return (
-        <span className={`${styles.badge} ${styles[type]} ${styles[variant]} ${className}`}>
+        <span
+            className={`${styles.badge} ${styles[type]} ${styles[variant]} ${className}`}
+            style={style}
+        >
             {children}
         </span>
     );

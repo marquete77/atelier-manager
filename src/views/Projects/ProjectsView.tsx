@@ -12,23 +12,18 @@ import {
     Loader2,
     Calendar,
     ChevronRight,
-    ArrowLeft
+    ArrowLeft,
+    HelpCircle
 } from 'lucide-react';
 import { ProjectService } from '@/services/project.service';
 import { useAuth } from '@/hooks/useAuth';
+import { useProjectStatuses } from '@/hooks/useProjectStatuses';
 import { formatCurrency } from '@/utils/currency';
 import { formatDate } from '@/utils/date';
 import { containerVariants, itemVariants } from '@/constants/animations';
 import styles from './ProjectsView.module.css';
 
-type ProjectStatus = 'pending' | 'in_progress' | 'completed' | 'delivered';
-
-const statusLabels: Record<ProjectStatus, { label: string, color: string, icon: any }> = {
-    pending: { label: 'Pendiente', color: '#f59e0b', icon: Clock },
-    in_progress: { label: 'En Proceso', color: '#3b82f6', icon: Scissors },
-    completed: { label: 'Completado', color: '#10b981', icon: CheckCircle2 },
-    delivered: { label: 'Entregado', color: '#6366f1', icon: Truck },
-};
+type ProjectStatus = string;
 
 export const ProjectsView: React.FC = () => {
     const { user } = useAuth();
@@ -36,6 +31,7 @@ export const ProjectsView: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<ProjectStatus | 'all'>('all');
     const [searchTerm, setSearchTerm] = useState('');
+    const { statuses, getStatusIcon, getStatusInfo, STATUS_ORDER, loading: statusesLoading } = useProjectStatuses();
 
     useEffect(() => {
         if (user) {
@@ -48,6 +44,8 @@ export const ProjectsView: React.FC = () => {
             setLoading(true);
             const { data, error } = await ProjectService.getAll();
             if (error) throw error;
+            console.log('--- DATA DESDE LA API (Proyectos) ---');
+            console.log(data);
             setProjects(data || []);
         } catch (error) {
             console.error('Error fetching projects:', error);
@@ -72,17 +70,30 @@ export const ProjectsView: React.FC = () => {
     };
 
     const filteredProjects = projects.filter(project => {
-        const matchesStatus = filter === 'all' || project.status === filter;
-        const matchesSearch = (project.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            project.clients?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()));
+        const matchesStatus = filter === 'all' || String(project.status) === String(filter);
+        const searchLower = searchTerm.toLowerCase();
+        const matchesSearch = !searchTerm ||
+            (project.title?.toLowerCase().includes(searchLower) ||
+                (project.clients?.full_name && String(project.clients.full_name).toLowerCase().includes(searchLower)));
         return matchesStatus && matchesSearch;
     });
 
-    if (loading && projects.length === 0) {
+    // Logging whenever the filter changes
+    useEffect(() => {
+        console.log('--- ESTADO DE FILTRADO LOCAL ---');
+        console.log('Filtro actual:', filter);
+        console.log('Proyectos totales:', projects.length);
+        console.log('Proyectos filtrados:', filteredProjects.length);
+        if (filteredProjects.length === 0 && projects.length > 0) {
+            console.log('Estados disponibles en los proyectos actuales:', [...new Set(projects.map(p => p.status))]);
+        }
+    }, [filter, projects, filteredProjects.length]);
+
+    if ((loading || statusesLoading) && projects.length === 0) {
         return (
             <div className={styles.loadingWrapper}>
                 <Loader2 size={40} className={styles.animateSpin} />
-                <p>Cargando todos tus hermosos proyectos...</p>
+                <p>Cargando tus hermosos proyectos...</p>
             </div>
         );
     }
@@ -112,13 +123,13 @@ export const ProjectsView: React.FC = () => {
                         >
                             Todos
                         </button>
-                        {(Object.keys(statusLabels) as ProjectStatus[]).map((s) => (
+                        {statuses.map((s) => (
                             <button
-                                key={s}
-                                className={`${styles.filterButton} ${filter === s ? styles.filterActive : ''}`}
-                                onClick={() => setFilter(s)}
+                                key={s.id}
+                                className={`${styles.filterButton} ${filter === s.id ? styles.filterActive : ''}`}
+                                onClick={() => setFilter(s.id)}
                             >
-                                {statusLabels[s].label}
+                                {s.label}
                             </button>
                         ))}
                     </div>
@@ -135,89 +146,101 @@ export const ProjectsView: React.FC = () => {
                 </div>
             </header>
 
-            <AnimatePresence mode="wait">
-                {filteredProjects.length > 0 ? (
-                    <motion.div
-                        key="projects-grid"
-                        className={styles.projectsGrid}
-                        variants={containerVariants}
-                        initial="hidden"
-                        animate="show"
-                        exit={{ opacity: 0, y: -20 }}
-                    >
-                        {filteredProjects.map((project) => {
-                            const status = project.status as ProjectStatus;
-                            const StatusIcon = statusLabels[status]?.icon || Clock;
+            <div className={styles.gridContainer}>
+                <AnimatePresence mode="popLayout">
+                    {filteredProjects.length > 0 ? (
+                        <motion.div
+                            key={filter} // Forces remount and animation when filter changes
+                            className={styles.projectsGrid}
+                            variants={containerVariants}
+                            initial="hidden"
+                            animate="show"
+                            exit="hidden"
+                        >
+                            {filteredProjects.map((project) => {
+                                const status = project.status as ProjectStatus;
+                                const statusInfo = getStatusInfo(status);
+                                const StatusIcon = getStatusIcon(status);
 
-                            return (
-                                <motion.div
-                                    key={project.id}
-                                    className={styles.projectCard}
-                                    variants={itemVariants}
-                                    layout
-                                >
-                                    <div className={styles.cardHeader}>
-                                        <h3 className={styles.projectTitle}>{project.title}</h3>
-                                        <span className={styles.typeBadge}>
-                                            {project.type === 'confection' ? 'Confección' : 'Arreglo'}
-                                        </span>
-                                    </div>
-
-                                    <div className={styles.clientInfo}>
-                                        <User size={16} />
-                                        <span className={styles.clientName}>{project.clients?.full_name}</span>
-                                    </div>
-
-                                    <div className={styles.details}>
-                                        <div className={styles.detailItem}>
-                                            <Calendar size={14} />
-                                            <span>Creado: {formatDate(project.created_at)}</span>
+                                return (
+                                    <motion.div
+                                        key={project.id}
+                                        className={styles.projectCard}
+                                        variants={itemVariants}
+                                        layout
+                                    >
+                                        <div className={styles.cardHeader}>
+                                            <h3 className={styles.projectTitle}>{project.title}</h3>
+                                            <span className={styles.typeBadge}>
+                                                {project.type === 'confection' ? 'Confección' : 'Arreglo'}
+                                            </span>
                                         </div>
-                                        <div className={styles.detailItem}>
-                                            <FileText size={14} />
-                                            <span>Presupuesto: {formatCurrency(project.total_cost || 0)}</span>
+
+                                        <div className={styles.clientInfo}>
+                                            <User size={16} />
+                                            <span className={styles.clientName}>{project.clients?.full_name}</span>
                                         </div>
-                                        {project.deposit > 0 && (
+
+                                        <div className={styles.details}>
                                             <div className={styles.detailItem}>
-                                                <CheckCircle2 size={14} />
-                                                <span>Pagado: {formatCurrency(project.deposit)}</span>
+                                                <Calendar size={14} />
+                                                <span>Creado: {formatDate(project.created_at)}</span>
                                             </div>
-                                        )}
-                                    </div>
-
-                                    <div className={styles.statusSection}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                            <StatusIcon size={16} color={statusLabels[status]?.color} />
-                                            <span className={styles.statusLabel}>{statusLabels[status]?.label}</span>
+                                            <div className={styles.detailItem}>
+                                                <FileText size={14} />
+                                                <span>Presupuesto: {formatCurrency(project.total_cost || 0)}</span>
+                                            </div>
+                                            {project.deposit > 0 && (
+                                                <div className={styles.detailItem}>
+                                                    <CheckCircle2 size={14} />
+                                                    <span>Pagado: {formatCurrency(project.deposit)}</span>
+                                                </div>
+                                            )}
                                         </div>
 
-                                        <select
-                                            className={styles.statusSelect}
-                                            value={project.status}
-                                            onChange={(e) => handleStatusChange(project.id, e.target.value as ProjectStatus)}
-                                        >
-                                            <option value="pending">Pendiente</option>
-                                            <option value="in_progress">En Proceso</option>
-                                            <option value="completed">Completado</option>
-                                            <option value="delivered">Entregado</option>
-                                        </select>
-                                    </div>
-                                </motion.div>
-                            );
-                        })}
-                    </motion.div>
-                ) : (
-                    <motion.div
-                        key="empty-state"
-                        className={styles.emptyState}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                    >
-                        <p>No se encontraron proyectos con esos criterios.</p>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                                        <div className={styles.statusSection}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <StatusIcon size={16} color={statusInfo?.color || '#94a3b8'} />
+                                                <span className={styles.statusLabel}>{statusInfo?.label || 'Sin estado'}</span>
+                                            </div>
+
+                                            <select
+                                                className={styles.statusSelect}
+                                                value={project.status}
+                                                onChange={(e) => handleStatusChange(project.id, e.target.value)}
+                                            >
+                                                {statuses.map((s) => {
+                                                    const currentIndex = STATUS_ORDER.indexOf(project.status as ProjectStatus);
+                                                    const optionIndex = STATUS_ORDER.indexOf(s.id);
+                                                    return (
+                                                        <option
+                                                            key={s.id}
+                                                            value={s.id}
+                                                            disabled={optionIndex < currentIndex}
+                                                        >
+                                                            {s.label}
+                                                        </option>
+                                                    );
+                                                })}
+                                            </select>
+                                        </div>
+                                    </motion.div>
+                                );
+                            })}
+                        </motion.div>
+                    ) : (
+                        <motion.div
+                            key={`empty-${filter}`}
+                            className={styles.emptyState}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                        >
+                            <p>No se encontraron proyectos con esos criterios.</p>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
         </motion.div>
     );
 };

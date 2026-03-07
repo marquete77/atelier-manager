@@ -14,6 +14,7 @@ import { Badge } from '@/components/common/Badge/Badge';
 import { EditClientModal } from '../../../components/forms/EditClientModal/EditClientModal';
 import { useAuth } from '../../../hooks/useAuth';
 import { useClientDetails } from '@/hooks/useClientDetails';
+import { useProjectStatuses } from '@/hooks/useProjectStatuses';
 import { NewAppointmentModal } from '@/components/modals/NewAppointmentModal/NewAppointmentModal';
 import styles from './ClientProfileView.module.css';
 
@@ -22,12 +23,7 @@ interface ClientProfileViewProps {
 }
 
 
-const statusLabel: Record<string, string> = {
-    pending: 'Pendiente',
-    in_progress: 'En Proceso',
-    completed: 'Completado',
-    delivered: 'Entregado',
-};
+
 
 
 export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeView }) => {
@@ -42,6 +38,8 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
         loading,
         refresh: loadData
     } = useClientDetails(clientId);
+
+    const { getStatusInfo, getStatusIcon } = useProjectStatuses();
 
     const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -59,10 +57,12 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
         measures: (rawMeasurements?.values as Record<string, number>) || {},
         projects: (rawProjects || []).map((p: any) => {
             const deliveryApt = p.appointments?.find((a: any) => a.type === 'delivery');
+            const statusInfo = getStatusInfo(p.status);
             return {
                 id: p.id,
                 title: p.title,
-                status: statusLabel[p.status] ?? p.status ?? '—',
+                status: statusInfo?.label || p.status || '—',
+                statusId: p.status,
                 date: deliveryApt ? `Entrega: ${formatDate(deliveryApt.start_time)}` : formatDate(p.created_at),
                 price: p.total_cost ?? 0,
                 type: p.type ?? 'confection',
@@ -74,9 +74,9 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
 
     const hasMeasures = Object.keys(client.measures).length > 0;
 
-    const StatusIcon = ({ status }: { status: string }) => {
-        if (status === 'Entregado') return <Check size={14} />;
-        return <Scissors size={14} />;
+    const StatusIcon = ({ statusId }: { statusId: string }) => {
+        const IconComponent = getStatusIcon(statusId);
+        return <IconComponent size={14} />;
     };
 
     return (
@@ -370,19 +370,31 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: 0.3 + index * 0.1 }}
                             >
-                                <div className={`${styles.timelineIconWrapper} ${project.status === 'Entregado' ? styles.timelineIconActive : ''}`}>
-                                    <span className={styles.timelineIcon}>
-                                        <StatusIcon status={project.status} />
+                                <div
+                                    className={styles.timelineIconWrapper}
+                                    style={{
+                                        backgroundColor: getStatusInfo(project.statusId)?.color || '#f1f5f9',
+                                        color: getStatusInfo(project.statusId)?.color ? 'white' : '#64748b',
+                                        borderColor: 'white'
+                                    }}
+                                >
+                                    <span className={styles.timelineIcon} style={{ color: 'inherit' }}>
+                                        <StatusIcon statusId={project.statusId} />
                                     </span>
                                 </div>
                                 <div className={styles.timelineCard}>
                                     <div className={styles.timelineHeader}>
                                         <div className={styles.timelineTitle}>{project.title}</div>
                                         <Badge
-                                            type={project.status === 'Entregado' ? 'success' : 'warning'}
-                                            variant="filled"
+                                            style={{
+                                                backgroundColor: getStatusInfo(project.statusId)?.color + '15', // 15 is ~8% opacity for a soft background
+                                                color: getStatusInfo(project.statusId)?.color,
+                                                border: `1px solid ${getStatusInfo(project.statusId)?.color}40`, // 40 is ~25% opacity
+                                                textTransform: 'capitalize'
+                                            }}
+                                            variant="outline"
                                         >
-                                            {project.status}
+                                            {project.status.toLowerCase()}
                                         </Badge>
                                     </div>
                                     <div className={styles.timelineDetails}>
