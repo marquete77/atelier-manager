@@ -81,6 +81,7 @@ export const DashboardView: React.FC = () => {
           icon={CalendarIcon}
           badge="Hoy"
           colorScheme="blue"
+          onClick={() => navigate('/calendar')}
         />
         <StatCard
           label="Entregas Pendientes"
@@ -88,6 +89,7 @@ export const DashboardView: React.FC = () => {
           icon={Clock}
           badge="Pendientes"
           colorScheme="orange"
+          onClick={() => navigate('/projects')}
         />
         <StatCard
           label="Ingresos del Mes"

@@ -98,7 +98,7 @@
     padding: 1.25rem;
     box-shadow: var(--shadow-card);
     border: 1px solid #F8FAFC;
-    transition: all 0.2s;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
     position: relative;
     overflow: hidden;
@@ -107,7 +107,8 @@
 }
 
 .clientCard:hover {
-    box-shadow: var(--shadow-soft);
+    box-shadow: var(--shadow-premium);
+    transform: translateY(-4px) scale(1.02);
 }
 
 .activeStrip {

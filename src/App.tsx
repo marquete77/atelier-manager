@@ -8,6 +8,7 @@ import { ClientsView } from './views/Clients/ClientsView'
 import { ClientProfileView } from './views/Clients/ClientProfile/ClientProfileView'
 import { MeasurementsView } from './views/Measurements/MeasurementsView'
 import { NewProjectView } from './views/Projects/NewProjectView'
+import { ProjectsView } from './views/Projects/ProjectsView'
 import { CalendarView } from './views/Calendar/CalendarView'
 import { SettingsView } from './views/Settings/SettingsView'
 import { MainLayout } from './components/layout/MainLayout'
@@ -30,6 +31,7 @@ function App() {
               <Route path="/clients/:clientId" element={<ClientProfileView />} />
               <Route path="/clients/:clientId/measurements" element={<MeasurementsView />} />
               <Route path="/clients/:clientId/projects/new" element={<NewProjectView />} />
+              <Route path="/projects" element={<ProjectsView />} />
               <Route path="/calendar" element={<CalendarView />} />
               <Route path="/settings" element={<SettingsView />} />
               <Route path="/dashboard" element={<Navigate to="/" replace />} />

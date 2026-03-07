@@ -5,3 +5,5 @@ export type Project = Database['public']['Tables']['projects']['Row'];
 export type Appointment = Database['public']['Tables']['appointments']['Row'];
 export type Measurement = Database['public']['Tables']['measurements']['Row'];
 export type Alteration = Database['public']['Tables']['alterations']['Row'];
+
+export type ViewState = 'dashboard' | 'clients' | 'measurements' | 'calendar' | 'projects' | 'new-project' | 'client-profile' | 'settings';

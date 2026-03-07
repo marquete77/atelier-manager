@@ -20,20 +20,21 @@
   --color-fitting-light: #FDE2E1;
   --color-measurement: #2563EB;
   --color-measurement-light: #E1F0FD;
-  --color-delivery: #15803D;
-  --color-delivery-light: #E1F5E8;
-  --color-consultation: #B45309;
-  --color-consultation-light: #FEF5E1;
+  --color-delivery: #059669;
+  --color-delivery-light: #ECFDF5;
+  --color-consultation: #8B5CF6;
+  --color-consultation-light: #F5F3FF;
 
   /* Bordes */
   --radius-2xl: 16px;
   --radius-xl: 12px;
   --radius-lg: 8px;
 
-  /* Sombras (Soft UI) */
+  /* Sombras (Soft UI Premium) */
   --shadow-md: 0 4px 12px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-  --shadow-soft: 0 4px 20px -2px rgba(44, 62, 80, 0.05);
-  --shadow-card: 0 2px 12px -2px rgba(44, 62, 80, 0.03);
+  --shadow-soft: 0 10px 30px -5px rgba(44, 62, 80, 0.08), 0 4px 12px -4px rgba(44, 62, 80, 0.03);
+  --shadow-card: 0 8px 24px -4px rgba(44, 62, 80, 0.06), 0 2px 8px -2px rgba(44, 62, 80, 0.04);
+  --shadow-premium: 0 20px 40px -12px rgba(44, 62, 80, 0.12);
 
   /* Tipografía */
   --font-serif: 'Playfair Display', serif;

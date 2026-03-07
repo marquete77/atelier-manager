@@ -17,6 +17,7 @@ export const Nav: React.FC<NavProps> = ({ currentView, onChangeView, isCollapsed
     const navItems = [
         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
         { id: 'clients', label: 'Clientes', icon: Users },
+        { id: 'projects', label: 'Proyectos', icon: FileText },
         { id: 'calendar', label: 'Agenda', icon: Calendar },
     ];
 

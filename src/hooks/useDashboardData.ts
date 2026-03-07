@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/config/supabase';
 import { useAuth } from '@/hooks/useAuth';
+import { AppointmentService } from '@/services/appointment.service';
 
 export const useDashboardData = () => {
     const { user } = useAuth();
@@ -20,10 +21,11 @@ export const useDashboardData = () => {
         try {
             setLoading(true);
             setError(null);
-            const today = new Date().toISOString().split('T')[0];
+            const today = new Date().toLocaleDateString('en-CA');
 
             // 1. Appointments Today & 2. Pending Projects & 3. Monthly Revenue
-            const firstDayOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
+            const now = new Date();
+            const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toLocaleDateString('en-CA');
 
             const [
                 { count: aptCount },
@@ -35,7 +37,7 @@ export const useDashboardData = () => {
                 supabase.from('appointments').select('*', { count: 'exact', head: true }).eq('user_id', user.id).gte('start_time', `${today}T00:00:00`).lte('start_time', `${today}T23:59:59`),
                 supabase.from('projects').select('*', { count: 'exact', head: true }).eq('user_id', user.id).in('status', ['pending', 'in_progress']),
                 supabase.from('projects').select('total_cost').eq('user_id', user.id).gte('created_at', firstDayOfMonth),
-                supabase.from('appointments').select('id, start_time, type, status, clients(full_name)').eq('user_id', user.id).order('start_time', { ascending: true }).limit(8),
+                AppointmentService.getDashboardAppointments(user.id, 10),
                 supabase.from('projects').select('id, title, status, images, clients(full_name), appointments(start_time, type)').eq('user_id', user.id).in('status', ['pending', 'in_progress']).order('created_at', { ascending: false }).limit(4)
             ]);
 

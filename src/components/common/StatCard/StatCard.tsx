@@ -11,6 +11,7 @@ interface StatCardProps {
     badge?: string;
     badgeType?: 'success' | 'warning' | 'error' | 'info';
     colorScheme?: 'blue' | 'orange' | 'emerald';
+    onClick?: () => void;
 }
 
 export const StatCard: React.FC<StatCardProps> = ({
@@ -18,7 +19,8 @@ export const StatCard: React.FC<StatCardProps> = ({
     value,
     icon: Icon,
     badge,
-    colorScheme = 'blue'
+    colorScheme = 'blue',
+    onClick
 }) => {
     const getSchemeStyles = () => {
         switch (colorScheme) {
@@ -36,6 +38,8 @@ export const StatCard: React.FC<StatCardProps> = ({
             className={styles.statCard}
             variants={itemVariants}
             whileHover={{ y: -5, transition: { duration: 0.2 } }}
+            onClick={onClick}
+            style={{ cursor: onClick ? 'pointer' : 'default' }}
         >
             <div className={styles.statHeader}>
                 <div className={`${styles.statIconWrapper} ${colors.bg} ${colors.text}`}>

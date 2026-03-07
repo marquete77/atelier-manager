@@ -2,10 +2,16 @@
     background-color: var(--color-surface);
     padding: 1.5rem;
     border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-soft);
+    box-shadow: var(--shadow-card);
     border: 1px solid #F8FAFC;
     position: relative;
     overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.statCard:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: var(--shadow-premium);
 }
 
 .statHeader {

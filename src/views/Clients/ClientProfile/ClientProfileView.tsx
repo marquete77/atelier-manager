@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
     MessageCircle, Phone, Calendar, Plus, Mail, MapPin,
-    Wallet, Ruler, RefreshCw, History, Check, Scissors, Users, Loader2, X, Clock, Edit, ExternalLink, ArrowLeft
+    Wallet, Ruler, RefreshCw, History, Check, Scissors, Users, Edit, ExternalLink, ArrowLeft
 } from 'lucide-react';
 import { ViewState } from '../../../../types';
 import { supabase } from '@/config/supabase';
@@ -12,9 +12,9 @@ import { formatCurrency } from '@/utils/currency';
 import { containerVariants, itemVariants } from '@/constants/animations';
 import { Badge } from '@/components/common/Badge/Badge';
 import { EditClientModal } from '../../../components/forms/EditClientModal/EditClientModal';
-import { AppointmentService } from '../../../services/appointment.service';
 import { useAuth } from '../../../hooks/useAuth';
 import { useClientDetails } from '@/hooks/useClientDetails';
+import { NewAppointmentModal } from '@/components/modals/NewAppointmentModal/NewAppointmentModal';
 import styles from './ClientProfileView.module.css';
 
 interface ClientProfileViewProps {
@@ -70,67 +70,9 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
         }),
     };
 
-    const [appointmentForm, setAppointmentForm] = useState({
-        type: 'fitting',
-        date: '',
-        time: '',
-        notes: ''
-    });
-
-    const [isSavingAppointment, setIsSavingAppointment] = useState(false);
-    const [occupiedSlots, setOccupiedSlots] = useState<string[]>([]);
-    const [isLoadingSlots, setIsLoadingSlots] = useState(false);
     const [activeMeasureTab, setActiveMeasureTab] = useState<'upper' | 'lower'>('upper');
 
     const hasMeasures = Object.keys(client.measures).length > 0;
-
-    const handleSaveAppointment = async () => {
-        if (!user || !clientId) return;
-        setIsSavingAppointment(true);
-
-        const startDateTime = new Date(`${appointmentForm.date}T${appointmentForm.time}`);
-        const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000); // 1 hour duration default
-
-        const { error } = await AppointmentService.create({
-            user_id: user.id,
-            client_id: clientId,
-            type: appointmentForm.type,
-            start_time: startDateTime.toISOString(),
-            end_time: endDateTime.toISOString(),
-            title: `${appointmentForm.type === 'fitting' ? 'Prueba' : appointmentForm.type === 'measurement' ? 'Medición' : appointmentForm.type === 'delivery' ? 'Entrega' : 'Cita'}: ${client.name}`,
-            notes: appointmentForm.notes,
-            status: 'scheduled'
-        });
-
-        setIsSavingAppointment(false);
-
-        if (error) {
-            alert('Error al guardar la cita. Por favor, intenta de nuevo.');
-            return;
-        }
-
-        setIsAppointmentModalOpen(false);
-        setAppointmentForm({ type: 'fitting', date: '', time: '', notes: '' });
-        setOccupiedSlots([]);
-    };
-
-    useEffect(() => {
-        const fetchOccupiedSlots = async () => {
-            if (!appointmentForm.date) return;
-            setIsLoadingSlots(true);
-            const { data, error } = await AppointmentService.getByDate(appointmentForm.date);
-            if (!error && data) {
-                // Extract HH:mm from ISO strings
-                const slots = data.map(apt => {
-                    const date = new Date(apt.start_time);
-                    return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-                });
-                setOccupiedSlots(slots);
-            }
-            setIsLoadingSlots(false);
-        };
-        fetchOccupiedSlots();
-    }, [appointmentForm.date]);
 
     const StatusIcon = ({ status }: { status: string }) => {
         if (status === 'Entregado') return <Check size={14} />;
@@ -456,133 +398,13 @@ export const ClientProfileView: React.FC<ClientProfileViewProps> = ({ onChangeVi
             </div>
 
             {/* ── Modal: Nueva Cita ── */}
-            <AnimatePresence>
-                {isAppointmentModalOpen && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        style={{
-                            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            zIndex: 1000, padding: '1rem',
-                        }}
-                        onClick={() => setIsAppointmentModalOpen(false)}
-                    >
-                        <motion.div
-                            initial={{ opacity: 0, y: 20, scale: 0.97 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: 20, scale: 0.97 }}
-                            transition={{ duration: 0.25, ease: 'easeOut' }}
-                            style={{
-                                background: 'white', borderRadius: '1.25rem', padding: '2rem',
-                                width: '100%', maxWidth: '460px', boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
-                                position: 'relative',
-                            }}
-                            onClick={e => e.stopPropagation()}
-                        >
-                            {/* Header */}
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                    <div style={{ background: 'rgba(178,91,82,0.1)', borderRadius: '50%', width: '2.5rem', height: '2.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-terracotta)' }}>
-                                        <Calendar size={20} />
-                                    </div>
-                                    <div>
-                                        <h2 style={{ margin: 0, fontFamily: 'var(--font-serif)', fontSize: '1.25rem', color: 'var(--color-charcoal)' }}>Nueva Cita</h2>
-                                        <p style={{ margin: 0, fontSize: '0.8rem', color: '#94A3B8' }}>{client.name}</p>
-                                    </div>
-                                </div>
-                                <button onClick={() => setIsAppointmentModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', padding: '0.25rem' }}>
-                                    <X size={20} />
-                                </button>
-                            </div>
-
-                            {/* Form */}
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                <div>
-                                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#64748B', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Tipo de cita</label>
-                                    <select
-                                        value={appointmentForm.type}
-                                        onChange={(e) => setAppointmentForm({ ...appointmentForm, type: e.target.value })}
-                                        style={{ width: '100%', padding: '0.625rem 0.875rem', border: '1px solid #E2E8F0', borderRadius: '0.75rem', fontSize: '0.875rem', color: 'var(--color-charcoal)', background: 'white', outline: 'none' }}
-                                    >
-                                        <option value="fitting">Prueba de vestido</option>
-                                        <option value="measurement">Toma de medidas</option>
-                                        <option value="delivery">Entrega de prenda</option>
-                                        <option value="consultation">Consulta</option>
-                                    </select>
-                                </div>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-                                    <div>
-                                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#64748B', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Fecha</label>
-                                        <input
-                                            type="date"
-                                            value={appointmentForm.date}
-                                            onChange={(e) => setAppointmentForm({ ...appointmentForm, date: e.target.value })}
-                                            style={{ width: '100%', padding: '0.625rem 0.875rem', border: '1px solid #E2E8F0', borderRadius: '0.75rem', fontSize: '0.875rem', color: 'var(--color-charcoal)', boxSizing: 'border-box', outline: 'none' }}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#64748B', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Hora</label>
-                                        <div style={{ position: 'relative' }}>
-                                            <Clock size={16} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8', pointerEvents: 'none', zIndex: 1 }} />
-                                            <select
-                                                value={appointmentForm.time}
-                                                onChange={(e) => setAppointmentForm({ ...appointmentForm, time: e.target.value })}
-                                                style={{ width: '100%', padding: '0.625rem 0.875rem 0.625rem 2.2rem', border: '1px solid #E2E8F0', borderRadius: '0.75rem', fontSize: '0.875rem', color: 'var(--color-charcoal)', boxSizing: 'border-box', outline: 'none', background: 'white' }}
-                                            >
-                                                <option value="">{isLoadingSlots ? 'Cargando...' : 'Seleccionar hora'}</option>
-                                                {Array.from({ length: 25 }).map((_, i) => {
-                                                    const hour = Math.floor(i / 2) + 8;
-                                                    const minutes = i % 2 === 0 ? '00' : '30';
-                                                    const time = `${hour.toString().padStart(2, '0')}:${minutes}`;
-                                                    const isOccupied = occupiedSlots.includes(time);
-
-                                                    return (
-                                                        <option key={time} value={time} disabled={isOccupied}>
-                                                            {time} {isOccupied ? '(Ocupado)' : ''}
-                                                        </option>
-                                                    );
-                                                })}
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#64748B', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Notas</label>
-                                    <textarea
-                                        rows={3}
-                                        placeholder="Detalles de la cita..."
-                                        value={appointmentForm.notes}
-                                        onChange={(e) => setAppointmentForm({ ...appointmentForm, notes: e.target.value })}
-                                        style={{ width: '100%', padding: '0.625rem 0.875rem', border: '1px solid #E2E8F0', borderRadius: '0.75rem', fontSize: '0.875rem', color: 'var(--color-charcoal)', resize: 'none', boxSizing: 'border-box', outline: 'none', fontFamily: 'inherit' }}
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Actions */}
-                            <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem' }}>
-                                <button onClick={() => setIsAppointmentModalOpen(false)} style={{ flex: 1, padding: '0.75rem', border: '1px solid #E2E8F0', borderRadius: '0.75rem', background: 'white', color: '#64748B', fontWeight: 600, cursor: 'pointer', fontSize: '0.875rem' }}>
-                                    Cancelar
-                                </button>
-                                <motion.button
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    disabled={isSavingAppointment || !appointmentForm.date || !appointmentForm.time}
-                                    style={{
-                                        flex: 1, padding: '0.75rem', border: 'none', borderRadius: '0.75rem',
-                                        background: isSavingAppointment ? '#CBD5E1' : 'var(--color-terracotta)',
-                                        color: 'white', fontWeight: 700, cursor: (isSavingAppointment || !appointmentForm.date || !appointmentForm.time) ? 'not-allowed' : 'pointer', fontSize: '0.875rem'
-                                    }}
-                                    onClick={handleSaveAppointment}
-                                >
-                                    {isSavingAppointment ? 'Guardando...' : 'Guardar Cita'}
-                                </motion.button>
-                            </div>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            <NewAppointmentModal
+                isOpen={isAppointmentModalOpen}
+                onClose={() => setIsAppointmentModalOpen(false)}
+                clientId={clientId || ''}
+                clientName={client?.name || ''}
+                onSuccess={loadData}
+            />
 
             {/* ── Modal: Editar Cliente ── */}
             <EditClientModal

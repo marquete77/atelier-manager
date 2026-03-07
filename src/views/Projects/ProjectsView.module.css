@@ -1,0 +1,222 @@
+.container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    height: 100%;
+    min-height: 100vh;
+    overflow-y: auto;
+}
+
+.header {
+    margin-bottom: 2rem;
+}
+
+.titleSection {
+    margin-bottom: 1.5rem;
+}
+
+.filtersWrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.filters {
+    display: flex;
+    gap: 0.8rem;
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
+}
+
+.searchBar {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    padding: 0.6rem 1.2rem;
+    border-radius: 12px;
+    flex: 1;
+    max-width: 400px;
+    transition: all 0.2s;
+}
+
+.searchBar:focus-within {
+    border-color: var(--color-terracotta);
+    box-shadow: 0 0 0 3px rgba(178, 91, 82, 0.1);
+}
+
+.searchBar input {
+    background: none;
+    border: none;
+    color: var(--color-text-primary);
+    font-size: 0.95rem;
+    width: 100%;
+    outline: none;
+}
+
+.filterButton {
+    padding: 0.6rem 1.2rem;
+    border-radius: 12px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-secondary);
+    color: var(--color-text-secondary);
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.filterActive {
+    background: var(--color-terracotta);
+    color: white;
+    border-color: var(--color-terracotta);
+    box-shadow: 0 4px 12px rgba(178, 91, 82, 0.2);
+}
+
+.projectsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.projectCard {
+    background: var(--color-bg-secondary);
+    border-radius: 16px;
+    border: 1px solid var(--color-border);
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.projectCard:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: var(--shadow-premium);
+    border-color: var(--color-terracotta-light);
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.projectTitle {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: 1.4;
+}
+
+.clientInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+}
+
+.clientName {
+    font-weight: 500;
+    color: var(--color-terracotta);
+}
+
+.details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.detailItem {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+}
+
+.statusSection {
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.statusLabel {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-secondary);
+    font-weight: 600;
+}
+
+.statusSelect {
+    padding: 0.4rem 2rem 0.4rem 0.8rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-primary);
+    font-size: 0.85rem;
+    color: var(--color-text-primary);
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    transition: border-color 0.2s;
+}
+
+.statusSelect:focus {
+    outline: none;
+    border-color: var(--color-terracotta);
+}
+
+.loadingWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+    opacity: 0.6;
+}
+
+.emptyState {
+    text-align: center;
+    padding: 4rem;
+    background: var(--color-bg-secondary);
+    border-radius: 16px;
+    border: 2px dashed var(--color-border);
+    color: var(--color-text-secondary);
+}
+
+.animateSpin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.typeBadge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    background: var(--color-terracotta-light);
+    color: var(--color-terracotta);
+    font-weight: 600;
+}

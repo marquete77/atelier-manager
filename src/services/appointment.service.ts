@@ -19,6 +19,15 @@ export const AppointmentService = {
             .single()
     },
 
+    async update(id: string, data: Partial<AppointmentInsert>) {
+        return await supabase
+            .from('appointments')
+            .update(data)
+            .eq('id', id)
+            .select()
+            .single()
+    },
+
     async getByClientId(clientId: string) {
         return await supabase
             .from('appointments')
@@ -28,13 +37,27 @@ export const AppointmentService = {
     },
 
     async getByDate(date: string) {
-        const startOfDay = `${date}T00:00:00Z`
-        const endOfDay = `${date}T23:59:59Z`
+        const startOfDay = `${date}T00:00:00`
+        const endOfDay = `${date}T23:59:59`
 
         return await supabase
             .from('appointments')
             .select('start_time')
             .gte('start_time', startOfDay)
             .lte('start_time', endOfDay)
+    },
+
+    async getDashboardAppointments(userId: string, limit: number = 10) {
+        // Use local date (YYYY-MM-DD) instead of toISOString to avoid day shift at late hours
+        const today = new Date().toLocaleDateString('en-CA');
+        const startOfToday = `${today}T00:00:00`;
+
+        return await supabase
+            .from('appointments')
+            .select('id, start_time, type, status, clients(full_name)')
+            .eq('user_id', userId)
+            .gte('start_time', startOfToday)
+            .order('start_time', { ascending: true })
+            .limit(limit);
     }
 }

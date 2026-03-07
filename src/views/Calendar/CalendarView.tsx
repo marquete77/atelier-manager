@@ -16,7 +16,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { THEME_COLORS, APP_LABELS, APPOINTMENT_TYPES } from "@/constants/appearance";
 import styles from './CalendarView.module.css';
 import { AppointmentModal } from './AppointmentModal/AppointmentModal';
-import { NewAppointmentModal } from './NewAppointmentModal/NewAppointmentModal';
+import { NewAppointmentModal } from '@/components/modals/NewAppointmentModal/NewAppointmentModal';
 
 interface Appointment {
   id: string;
@@ -38,14 +38,13 @@ export const CalendarView: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
-  const [newSlot, setNewSlot] = useState<{ date: string, time: string } | undefined>(undefined);
+  const [newSlot, setNewSlot] = useState<{ date: string, time?: string, type?: string, clientName?: string, clientId?: string, appointmentId?: string } | undefined>(undefined);
 
   // Date Logic States
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [direction, setDirection] = useState(0);
-  const [enabledCategories, setEnabledCategories] = useState<string[]>(['fitting', 'measurement', 'delivery']);
-
+  const [enabledCategories, setEnabledCategories] = useState<string[]>(['fitting', 'measurement', 'delivery', 'consultation']);
   const daysLabels = ['LUNES', 'MARTES', 'MIÉRCOLES', 'JUEVES', 'VIERNES', 'SÁBADO', 'DOMINGO'];
   const miniDaysLabels = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
   useEffect(() => {
@@ -268,6 +267,7 @@ export const CalendarView: React.FC = () => {
                 { id: APPOINTMENT_TYPES.FITTING, label: APP_LABELS.appointmentTypes.fitting, color: THEME_COLORS.appointments.fitting.main },
                 { id: APPOINTMENT_TYPES.MEASUREMENT, label: APP_LABELS.appointmentTypes.measurement, color: THEME_COLORS.appointments.measurement.main },
                 { id: APPOINTMENT_TYPES.DELIVERY, label: APP_LABELS.appointmentTypes.delivery, color: THEME_COLORS.appointments.delivery.main },
+                { id: APPOINTMENT_TYPES.CONSULTATION, label: APP_LABELS.appointmentTypes.consultation, color: THEME_COLORS.appointments.consultation.main },
               ].map(cat => (
                 <div
                   key={cat.id}
@@ -386,7 +386,19 @@ export const CalendarView: React.FC = () => {
                                             ${item.isPadding ? styles.dayCellPadding : styles.dayCell} 
                                             ${isTodayCell ? styles.dayCellToday : ''}
                                         `}
-                      style={(!item.isPadding && new Date(item.year, item.month, item.day).getDay() !== 0) ? { backgroundColor: 'rgba(178, 91, 82, 0.05)' } : {}}
+                      style={(!item.isPadding && new Date(item.year, item.month, item.day).getDay() !== 0) ? { backgroundColor: 'rgba(178, 91, 82, 0.05)', cursor: 'pointer' } : { cursor: 'pointer' }}
+                      onClick={() => {
+                        if (!item.isPadding) {
+                          // Format date to YYYY-MM-DD to match the input[type="date"] format
+                          const dateObj = new Date(item.year, item.month, item.day);
+                          // Adjust for local timezone to prevent off-by-one errors when converting to formatting
+                          const tzOffset = dateObj.getTimezoneOffset() * 60000;
+                          const localISOTime = (new Date(dateObj.getTime() - tzOffset)).toISOString().split('T')[0];
+
+                          setNewSlot({ date: localISOTime, time: undefined });
+                          setIsNewModalOpen(true);
+                        }
+                      }}
                     >
                       <span
                         className={styles.dayCellNumber}
@@ -433,17 +445,44 @@ export const CalendarView: React.FC = () => {
       <AppointmentModal
         isOpen={!!selectedAppointment}
         onClose={() => setSelectedAppointment(null)}
-        appointment={selectedAppointment}
+        appointment={selectedAppointment ? {
+          id: selectedAppointment.id,
+          clientId: selectedAppointment.client_id,
+          clientName: selectedAppointment.clients?.full_name || 'Cliente',
+          type: selectedAppointment.type,
+          date: selectedAppointment.start_time,
+          time: new Date(selectedAppointment.start_time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
+          notes: selectedAppointment.notes
+        } : null}
+        onReschedule={(apt) => {
+          setNewSlot({
+            date: apt.date.split('T')[0], // Extract just the YYYY-MM-DD local date
+            time: apt.time,
+            type: apt.type,
+            clientName: apt.clientName,
+            clientId: apt.clientId,
+            appointmentId: apt.id
+          });
+          setIsNewModalOpen(true);
+        }}
       />
       <NewAppointmentModal
         isOpen={isNewModalOpen}
         onClose={() => {
           setIsNewModalOpen(false);
           fetchAppointments();
+          setNewSlot({ date: '', time: undefined }); // Reset on close
         }}
         initialDate={newSlot?.date}
         initialTime={newSlot?.time}
+        initialType={newSlot?.type}
+        clientName={newSlot?.clientName}
+        clientId={newSlot?.clientId}
+        appointmentId={newSlot?.appointmentId}
+        onSuccess={fetchAppointments}
       />
     </div>
   );
 };
+
+export default CalendarView;

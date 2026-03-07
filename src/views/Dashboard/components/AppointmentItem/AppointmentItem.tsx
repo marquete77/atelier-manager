@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { THEME_COLORS, APP_LABELS, APPOINTMENT_TYPES } from "@/constants/appearance";
-import { formatTime, getAmPm } from '@/utils/date';
+import { formatTime, getAmPm, getUrgencyLabel } from '@/utils/date';
 import { itemVariants } from '@/constants/animations';
 import { Badge } from '@/components/common/Badge/Badge';
 import styles from './AppointmentItem.module.css';
@@ -22,6 +22,7 @@ interface AppointmentItemProps {
 
 export const AppointmentItem: React.FC<AppointmentItemProps> = ({ apt }) => {
     const colors = (THEME_COLORS.appointments as any)[apt.type] || THEME_COLORS.appointments.default;
+    const urgency = getUrgencyLabel(apt.start_time);
 
     return (
         <motion.div
@@ -48,6 +49,15 @@ export const AppointmentItem: React.FC<AppointmentItemProps> = ({ apt }) => {
                     </Badge>
                 </div>
                 <p className={styles.appointmentStatus}>
+                    <span style={{
+                        fontWeight: 700,
+                        color: urgency?.type === 'today' ? 'var(--color-terracotta)' : '#64748b',
+                        marginRight: '0.5rem',
+                        textTransform: 'uppercase',
+                        fontSize: '0.75rem'
+                    }}>
+                        {urgency?.label} •
+                    </span>
                     {apt.type === APPOINTMENT_TYPES.DELIVERY ? 'Próxima entrega' : 'Cita programada'}
                 </p>
             </div>

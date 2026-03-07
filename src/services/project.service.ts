@@ -41,5 +41,14 @@ export const ProjectService = {
 
     getPublicUrl(path: string) {
         return supabase.storage.from('projects').getPublicUrl(path).data.publicUrl
+    },
+
+    async update(id: string, data: Partial<Database['public']['Tables']['projects']['Update']>) {
+        return await supabase
+            .from('projects')
+            .update(data)
+            .eq('id', id)
+            .select()
+            .single()
     }
 }
