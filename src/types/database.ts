@@ -9,6 +9,60 @@ export type Json =
 export type Database = {
     public: {
         Tables: {
+            alteration_catalog_garments: {
+                Row: {
+                    created_at: string | null
+                    icon_name: string
+                    id: string
+                    label: string
+                    slug: string
+                    sort_order: number
+                }
+                Insert: {
+                    created_at?: string | null
+                    icon_name: string
+                    id?: string
+                    label: string
+                    slug: string
+                    sort_order?: number
+                }
+                Update: {
+                    created_at?: string | null
+                    icon_name?: string
+                    id?: string
+                    label?: string
+                    slug?: string
+                    sort_order?: number
+                }
+                Relationships: []
+            }
+            alteration_catalog_tasks: {
+                Row: {
+                    created_at: string | null
+                    default_price: number
+                    id: string
+                    label: string
+                    slug: string
+                    sort_order: number
+                }
+                Insert: {
+                    created_at?: string | null
+                    default_price?: number
+                    id?: string
+                    label: string
+                    slug: string
+                    sort_order?: number
+                }
+                Update: {
+                    created_at?: string | null
+                    default_price?: number
+                    id?: string
+                    label?: string
+                    slug?: string
+                    sort_order?: number
+                }
+                Relationships: []
+            }
             alterations: {
                 Row: {
                     created_at: string | null
@@ -133,7 +187,7 @@ export type Database = {
                 }
                 Update: {
                     attachment_url?: string | null
-                    client_id?: string
+                    client_id: string
                     content?: string | null
                     created_at?: string | null
                     id?: string
@@ -161,42 +215,42 @@ export type Database = {
             clients: {
                 Row: {
                     access_token: string | null
+                    address: string | null
+                    address_link: string | null
                     created_at: string | null
                     email: string | null
                     full_name: string
                     id: string
                     notes: string | null
                     phone: string | null
-                    address: string | null
-                    address_link: string | null
                     portal_user_id: string | null
                     updated_at: string | null
                     user_id: string
                 }
                 Insert: {
                     access_token?: string | null
+                    address?: string | null
+                    address_link?: string | null
                     created_at?: string | null
                     email?: string | null
                     full_name: string
                     id?: string
                     notes?: string | null
                     phone?: string | null
-                    address?: string | null
-                    address_link?: string | null
                     portal_user_id?: string | null
                     updated_at?: string | null
                     user_id: string
                 }
                 Update: {
                     access_token?: string | null
+                    address?: string | null
+                    address_link?: string | null
                     created_at?: string | null
                     email?: string | null
                     full_name?: string
                     id?: string
                     notes?: string | null
                     phone?: string | null
-                    address?: string | null
-                    address_link?: string | null
                     portal_user_id?: string | null
                     updated_at?: string | null
                     user_id?: string
@@ -255,24 +309,24 @@ export type Database = {
                 Row: {
                     color: string
                     created_at: string | null
-                    id: string
                     icon: string
+                    id: string
                     label: string
                     sort_order: number
                 }
                 Insert: {
                     color: string
                     created_at?: string | null
-                    id: string
                     icon: string
+                    id: string
                     label: string
                     sort_order: number
                 }
                 Update: {
                     color?: string
                     created_at?: string | null
-                    id?: string
                     icon?: string
+                    id?: string
                     label?: string
                     sort_order?: number
                 }
@@ -285,12 +339,12 @@ export type Database = {
                     deposit: number | null
                     description: string | null
                     id: string
+                    images: string[] | null
                     is_paid: boolean | null
                     status: string | null
                     title: string
                     total_cost: number | null
                     type: string | null
-                    images: string[] | null
                     user_id: string
                 }
                 Insert: {
@@ -299,12 +353,12 @@ export type Database = {
                     deposit?: number | null
                     description?: string | null
                     id?: string
+                    images?: string[] | null
                     is_paid?: boolean | null
                     status?: string | null
                     title: string
                     total_cost?: number | null
                     type?: string | null
-                    images?: string[] | null
                     user_id: string
                 }
                 Update: {
@@ -313,12 +367,12 @@ export type Database = {
                     deposit?: number | null
                     description?: string | null
                     id?: string
+                    images?: string[] | null
                     is_paid?: boolean | null
                     status?: string | null
                     title?: string
                     total_cost?: number | null
                     type?: string | null
-                    images?: string[] | null
                     user_id?: string
                 }
                 Relationships: [

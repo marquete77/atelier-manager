@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Shirt, Scissors, Tag, Plus, Camera, Calendar as CalendarIcon } from 'lucide-react';
+import { Shirt, Scissors, Tag, Plus, Camera, Calendar as CalendarIcon, LucideIcon } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 import { Client } from '../../../types';
+import { AlterationCatalogService, AlterationGarment, AlterationTask } from '../../../services/alterationCatalog.service';
 import styles from './AlterationsForm.module.css';
 
 // Animation Variants
@@ -19,16 +21,43 @@ interface AlterationsDetailsProps {
 }
 
 export const AlterationsDetails: React.FC<AlterationsDetailsProps> = ({ onDataChange }) => {
+    const [garmentTypes, setGarmentTypes] = useState<AlterationGarment[]>([]);
+    const [taskTemplates, setTaskTemplates] = useState<AlterationTask[]>([]);
     const [selectedGarment, setSelectedGarment] = useState<string>('pantalon');
     const [notes, setNotes] = useState<string>('');
-    const [tasks, setTasks] = useState([
-        { id: 'ruedo', label: 'Ruedo / Basta', price: 15.00, selected: false },
-        { id: 'cintura', label: 'Ajuste Cintura', price: 25.00, selected: false },
-        { id: 'cierre', label: 'Cambio de Cierre', price: 20.00, selected: false },
-        { id: 'parches', label: 'Zurcido / Parches', price: 10.00, selected: false },
-        { id: 'mangas', label: 'Acortar Mangas', price: 18.00, selected: false },
-        { id: 'botones', label: 'Reponer Botones', price: 5.00, selected: false },
-    ]);
+    const [tasks, setTasks] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const loadCatalog = async () => {
+            try {
+                const [garments, templates] = await Promise.all([
+                    AlterationCatalogService.getGarments(),
+                    AlterationCatalogService.getTasks()
+                ]);
+                setGarmentTypes(garments);
+                setTaskTemplates(templates);
+
+                // Initialize tasks with selected: false
+                setTasks(templates.map(t => ({
+                    id: t.slug,
+                    label: t.label,
+                    price: t.default_price,
+                    selected: false
+                })));
+
+                if (garments.length > 0) {
+                    setSelectedGarment(garments[0].slug);
+                }
+            } catch (error) {
+                console.error('Error loading alteration catalog:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadCatalog();
+    }, []);
 
     const toggleTask = (id: string) => {
         setTasks(prev => prev.map(t => t.id === id ? { ...t, selected: !t.selected } : t));
@@ -49,12 +78,10 @@ export const AlterationsDetails: React.FC<AlterationsDetailsProps> = ({ onDataCh
         onDataChange({ total, count, garment: selectedGarment, tasks, notes });
     }, [tasks, selectedGarment, notes]);
 
-    const garmentTypes = [
-        { id: 'pantalon', label: 'Pantalón', icon: Scissors },
-        { id: 'vestido', label: 'Vestido', icon: Shirt },
-        { id: 'camisa', label: 'Camisa/Blusa', icon: Tag },
-        { id: 'chaqueta', label: 'Chaqueta', icon: Shirt },
-    ];
+    const getIcon = (iconName: string): LucideIcon => {
+        const Icon = (LucideIcons as any)[iconName];
+        return Icon || Scissors;
+    };
 
     return (
         <motion.div
@@ -63,82 +90,91 @@ export const AlterationsDetails: React.FC<AlterationsDetailsProps> = ({ onDataCh
             initial="hidden"
             animate="show"
         >
-            {/* Garment Selection */}
-            <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>Tipo de Prenda</h3>
-                <div className={styles.garmentGrid}>
-                    {garmentTypes.map((garment) => (
-                        <button
-                            key={garment.id}
-                            onClick={() => setSelectedGarment(garment.id)}
-                            className={`${styles.garmentButton} ${selectedGarment === garment.id
-                                ? styles.garmentButtonActive
-                                : ''
-                                }`}
-                        >
-                            <garment.icon size={28} className={styles.garmentIcon} strokeWidth={1.5} />
-                            <span className={styles.garmentLabel}>{garment.label}</span>
-                        </button>
-                    ))}
-                </div>
-            </section>
-
-            {/* Tasks List */}
-            <section className={styles.section}>
-                <div className={styles.tasksHeader}>
-                    <h3 className={styles.sectionTitle}>Tareas a realizar</h3>
-                    <button className={styles.customTaskButton}>
-                        <Plus size={14} /> Tarea Personalizada
-                    </button>
-                </div>
-
-                <div className={styles.tasksList}>
-                    {tasks.map((task) => (
-                        <div
-                            key={task.id}
-                            className={`${styles.taskItem} ${task.selected ? styles.taskItemActive : ''}`}
-                            onClick={() => toggleTask(task.id)}
-                        >
-                            <div className={styles.checkboxWrapper}>
-                                <input
-                                    type="checkbox"
-                                    checked={task.selected}
-                                    onChange={() => { }} // Controlled via parent div click
-                                    className={styles.checkbox}
-                                />
-                            </div>
-
-                            <div className={styles.taskLabelFlex}>
-                                <span className={`${styles.taskLabel} ${task.selected ? styles.taskLabelActive : ''}`}>
-                                    {task.label}
-                                </span>
-                            </div>
-
-                            <div className={styles.priceContainer} onClick={(e) => e.stopPropagation()}>
-                                <span className={styles.currencySymbol}>$</span>
-                                <input
-                                    type="number"
-                                    value={task.price}
-                                    onChange={(e) => updatePrice(task.id, e.target.value)}
-                                    disabled={!task.selected}
-                                    className={`${styles.priceInput} ${task.selected ? styles.priceInputActive : ''}`}
-                                />
-                            </div>
+            {isLoading ? (
+                <div style={{ padding: '2rem', textAlign: 'center' }}>Cargando catálogo...</div>
+            ) : (
+                <>
+                    {/* Garment Selection */}
+                    <section className={styles.section}>
+                        <h3 className={styles.sectionTitle}>Tipo de Prenda</h3>
+                        <div className={styles.garmentGrid}>
+                            {garmentTypes.map((garment) => {
+                                const Icon = getIcon(garment.icon_name);
+                                return (
+                                    <button
+                                        key={garment.id}
+                                        onClick={() => setSelectedGarment(garment.slug)}
+                                        className={`${styles.garmentButton} ${selectedGarment === garment.slug
+                                            ? styles.garmentButtonActive
+                                            : ''
+                                            }`}
+                                    >
+                                        <Icon size={28} className={styles.garmentIcon} strokeWidth={1.5} />
+                                        <span className={styles.garmentLabel}>{garment.label}</span>
+                                    </button>
+                                );
+                            })}
                         </div>
-                    ))}
-                </div>
-            </section>
+                    </section>
 
-            {/* Specific Notes */}
-            <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>Notas Específicas</h3>
-                <textarea
-                    className={styles.notesTextarea}
-                    placeholder="Detalles sobre el arreglo (e.g., 'Subir 2cm pero dejar 3cm de tela')..."
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                ></textarea>
-            </section>
+                    {/* Tasks List */}
+                    <section className={styles.section}>
+                        <div className={styles.tasksHeader}>
+                            <h3 className={styles.sectionTitle}>Tareas a realizar</h3>
+                            <button className={styles.customTaskButton}>
+                                <Plus size={14} /> Tarea Personalizada
+                            </button>
+                        </div>
+
+                        <div className={styles.tasksList}>
+                            {tasks.map((task) => (
+                                <div
+                                    key={task.id}
+                                    className={`${styles.taskItem} ${task.selected ? styles.taskItemActive : ''}`}
+                                    onClick={() => toggleTask(task.id)}
+                                >
+                                    <div className={styles.checkboxWrapper}>
+                                        <input
+                                            type="checkbox"
+                                            checked={task.selected}
+                                            onChange={() => { }} // Controlled via parent div click
+                                            className={styles.checkbox}
+                                        />
+                                    </div>
+
+                                    <div className={styles.taskLabelFlex}>
+                                        <span className={`${styles.taskLabel} ${task.selected ? styles.taskLabelActive : ''}`}>
+                                            {task.label}
+                                        </span>
+                                    </div>
+
+                                    <div className={styles.priceContainer} onClick={(e) => e.stopPropagation()}>
+                                        <span className={styles.currencySymbol}>$</span>
+                                        <input
+                                            type="number"
+                                            value={task.price}
+                                            onChange={(e) => updatePrice(task.id, e.target.value)}
+                                            disabled={!task.selected}
+                                            className={`${styles.priceInput} ${task.selected ? styles.priceInputActive : ''}`}
+                                        />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* Specific Notes */}
+                    <section className={styles.section}>
+                        <h3 className={styles.sectionTitle}>Notas Específicas</h3>
+                        <textarea
+                            className={styles.notesTextarea}
+                            placeholder="Detalles sobre el arreglo (e.g., 'Subir 2cm pero dejar 3cm de tela')..."
+                            value={notes}
+                            onChange={(e) => setNotes(e.target.value)}
+                        ></textarea>
+                    </section>
+                </>
+            )}
         </motion.div>
     );
 };
